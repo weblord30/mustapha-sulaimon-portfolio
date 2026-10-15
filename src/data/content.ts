@@ -51,23 +51,10 @@ export type Project = {
   stack: string[];
   link?: string;
   year: string;
+  status: "live" | "concept";
 };
 
 export const projects: Project[] = [
-  {
-    id: "ikonleague",
-    title: "iKonLeague",
-    category: "Sports Tech / Mobile App",
-    problem:
-      "Competitive eFootball communities had no structure: no real registration, scheduling, or leaderboards, just group chats trying to run a league.",
-    decisions: [
-      "Live registration counter shows how many players and teams have joined, so the room visibly fills up as it goes.",
-      "Both players submit their result with proof after a scheduled match. Matching submissions update the standings automatically, mismatches route straight to an admin dispute queue.",
-      "Supabase handles auth, real-time data, and proof storage. Flutter front end for one codebase across platforms.",
-    ],
-    stack: ["Flutter", "Node.js", "Supabase"],
-    year: "2025",
-  },
   {
     id: "klasslab",
     title: "KlassLab",
@@ -80,21 +67,86 @@ export const projects: Project[] = [
       "Supabase handles auth, database, and real-time sync across attendance, messaging, and submissions.",
     ],
     stack: ["React", "Node.js", "Supabase"],
+    link: "https://klasslab.vercel.app",
     year: "2025",
+    status: "live",
   },
   {
-    id: "nexus",
-    title: "Nexus",
-    category: "SaaS / Business Intelligence",
+    id: "surgenet",
+    title: "SurgeNet",
+    category: "ISP / Billing Portal",
     problem:
-      "Growing businesses had the data (revenue, activity, team performance) but no single live view of it, and reporting meant manual exports every time.",
+      "Running a paid WiFi hotspot means juggling contracts, manual account setup, and cash handling, when most customers just want to pay once and connect instantly.",
     decisions: [
-      "Custom widget layouts so each team monitors what actually matters to them, not a fixed dashboard.",
-      "Live-updating metrics over polling, for near real-time accuracy without hammering the backend.",
-      "Next.js front end with a Python service layer for analytics processing, PostgreSQL underneath.",
+      "Self-serve plan selection across time passes, data bundles, and unlimited access, with sign-in by phone or email so a customer's plan carries over.",
+      "Paystack handles the payment flow end to end, with encrypted checkout and order confirmation before access is granted.",
+      "Separate staff/admin panel for granting free access, batch-generating vouchers, and tracking customers and transactions, kept apart from the customer-facing flow.",
     ],
-    stack: ["Next.js", "Python", "PostgreSQL"],
-    year: "2025",
+    stack: ["Next.js", "Node.js", "Paystack"],
+    link: "https://surgenet.vercel.app",
+    year: "2026",
+    status: "live",
+  },
+  {
+    id: "gready",
+    title: "GREady",
+    category: "EdTech / Test Prep PWA",
+    problem:
+      "GRE practice tools rarely match the real test's interface or adaptive scoring, so students walk in on test day without an accurate sense of their actual score.",
+    decisions: [
+      "Full-length adaptive practice tests that mirror the real GRE interface: the timer, question navigator, and on-screen calculator, not a generic quiz UI.",
+      "Section-adaptive difficulty: a strong first section raises the difficulty of the next, the same way the real test adjusts.",
+      "Installable as a PWA with in-progress tests saved on-device, so a test can be picked up offline without losing progress.",
+    ],
+    stack: ["Next.js", "PostgreSQL", "Prisma", "Zustand"],
+    link: "https://greadyprep.vercel.app",
+    year: "2026",
+    status: "live",
+  },
+  {
+    id: "ledger",
+    title: "Ledger",
+    category: "FinTech / SaaS",
+    problem:
+      "Freelancers doing milestone work get stiffed or ghosted mid-project, with no neutral record of what was agreed or paid.",
+    decisions: [
+      "Milestone-based escrow: funds are held per milestone and released on approval, not as one lump invoice.",
+      "Built the dispute flow first, not last, since it's the feature that actually earns trust from both sides.",
+      "Multi-currency by default, since the freelancers this is for are rarely being paid in their own currency.",
+    ],
+    stack: ["Next.js", "Node.js", "PostgreSQL", "Stripe Connect"],
+    year: "2026",
+    status: "concept",
+  },
+  {
+    id: "marketplace",
+    title: "Marketplace",
+    category: "Commerce / WhatsApp",
+    problem:
+      "Most small sellers run their entire shop out of WhatsApp DMs, no inventory tracking, no order history, constant double-selling and 'is this still available?' chaos.",
+    decisions: [
+      "Sits on top of WhatsApp instead of competing with it: a shareable catalog link a seller drops into their status or bio, not a storefront customers have to be convinced to visit.",
+      "Ordering opens a pre-filled WhatsApp message to the seller, so the buying flow customers already trust doesn't change.",
+      "Stock decrements on confirmed orders in the dashboard, scoped deliberately: WhatsApp Cloud API auto-replies for stock checks are the documented phase two, not a corner cut for phase one.",
+    ],
+    stack: ["React", "Node.js", "Supabase", "WhatsApp Cloud API"],
+    year: "2026",
+    status: "concept",
+  },
+  {
+    id: "handy",
+    title: "Handy",
+    category: "Local Services / Trust",
+    problem:
+      "Finding a plumber or electrician you can actually trust means asking around every time, no history, no accountability, price renegotiated at the door.",
+    decisions: [
+      "Verification and review history are the product, not a listing count: a tradesperson's profile is their completed-job record, not a self-written bio.",
+      "Repeat-booking is the retention mechanic, so a good first job turns into a saved contact instead of another one-off search.",
+      "Price ranges are set before contact, not haggled after arrival, to remove the most common point of friction.",
+    ],
+    stack: ["React Native", "Node.js", "PostgreSQL", "Supabase"],
+    year: "2026",
+    status: "concept",
   },
 ];
 

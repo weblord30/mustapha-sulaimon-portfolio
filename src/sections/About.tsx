@@ -1,13 +1,5 @@
-import { motion } from "framer-motion";
 import { Reveal } from "../components/Reveal";
 import { profile, skills } from "../data/content";
-
-function driftFor(i: number) {
-  const dx = ((i * 37) % 20) - 10;
-  const dy = ((i * 53) % 16) - 8;
-  const duration = 4 + (i % 4);
-  return { dx, dy, duration };
-}
 
 export function About() {
   return (
@@ -25,23 +17,14 @@ export function About() {
 
         <Reveal delay={0.15}>
           <div className="relative flex h-72 flex-wrap content-center items-center justify-center gap-3 rounded-2xl border border-border bg-surface/40 p-8">
-            {skills.map((skill, i) => {
-              const { dx, dy, duration } = driftFor(i);
-              return (
-                <motion.span
-                  key={skill}
-                  animate={{ x: [0, dx, 0], y: [0, dy, 0] }}
-                  transition={{
-                    duration,
-                    repeat: Infinity,
-                    ease: "easeInOut",
-                  }}
-                  className="rounded-full border border-border bg-surface-2/60 px-3.5 py-1.5 font-mono text-xs text-muted"
-                >
-                  {skill}
-                </motion.span>
-              );
-            })}
+            {skills.map((skill) => (
+              <span
+                key={skill}
+                className="rounded-full border border-border bg-surface-2/60 px-3.5 py-1.5 font-mono text-xs text-muted transition-colors hover:border-violet/40 hover:text-text"
+              >
+                {skill}
+              </span>
+            ))}
           </div>
         </Reveal>
       </div>

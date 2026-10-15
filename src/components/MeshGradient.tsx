@@ -48,7 +48,7 @@ float snoise(vec2 v) {
 float fbm(vec2 p) {
   float value = 0.0;
   float amp = 0.5;
-  for (int i = 0; i < 3; i++) {
+  for (int i = 0; i < 2; i++) {
     value += amp * snoise(p);
     p *= 2.0;
     amp *= 0.5;
@@ -162,7 +162,7 @@ export function MeshGradient() {
 
     function resize() {
       if (!canvas || !gl) return;
-      const dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+      const dpr = Math.min(window.devicePixelRatio || 1, 1.5);
       canvas.width = window.innerWidth * dpr;
       canvas.height = window.innerHeight * dpr;
       gl.viewport(0, 0, canvas.width, canvas.height);
@@ -170,9 +170,11 @@ export function MeshGradient() {
     resize();
     window.addEventListener("resize", resize);
 
-    let frameId: number;
+    let frameId: number | null = null;
+    let running = true;
     const start = performance.now();
     function render() {
+      if (!running) return;
       const time = (performance.now() - start) / 1000;
       mouse.x += (targetMouse.x - mouse.x) * 0.03;
       mouse.y += (targetMouse.y - mouse.y) * 0.03;
@@ -183,10 +185,29 @@ export function MeshGradient() {
       gl!.drawArrays(gl!.TRIANGLES, 0, 6);
       frameId = requestAnimationFrame(render);
     }
-    frameId = requestAnimationFrame(render);
+
+    // The hero is usually seen once near the top of the page — burning a
+    // WebGL shader on every frame for the entire session (even scrolled
+    // far away, even tab in background) is wasted GPU work that showed up
+    // as real lag on lower-end hardware. Only render while actually visible.
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        running = entry.isIntersecting;
+        if (running && frameId === null) {
+          frameId = requestAnimationFrame(render);
+        } else if (!running && frameId !== null) {
+          cancelAnimationFrame(frameId);
+          frameId = null;
+        }
+      },
+      { threshold: 0 }
+    );
+    observer.observe(canvas);
 
     return () => {
-      cancelAnimationFrame(frameId);
+      running = false;
+      if (frameId !== null) cancelAnimationFrame(frameId);
+      observer.disconnect();
       window.removeEventListener("resize", resize);
       window.removeEventListener("pointermove", onPointerMove);
     };

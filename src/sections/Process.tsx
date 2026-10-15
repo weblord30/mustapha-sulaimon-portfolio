@@ -56,7 +56,8 @@ export function Process() {
 
       <div
         ref={trackRef}
-        className="flex w-max gap-5 overflow-x-auto px-6 pb-4 [scroll-snap-type:x_mandatory] md:w-max md:gap-10 md:overflow-visible md:px-[max(1.5rem,calc((100vw-72rem)/2))] md:pb-0"
+        data-lenis-prevent
+        className="flex w-max gap-5 overflow-x-auto px-6 pb-4 [scroll-snap-type:x_mandatory] [touch-action:pan-x] md:w-max md:gap-10 md:overflow-visible md:px-[max(1.5rem,calc((100vw-72rem)/2))] md:pb-0"
       >
         {process.map((step) => (
           <div
