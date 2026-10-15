@@ -10,6 +10,11 @@ export function useLenis() {
       duration: 1.1,
       easing: (t) => Math.min(1, 1.001 - Math.pow(2, -10 * t)),
       smoothWheel: true,
+      // The attribute alone does nothing — Lenis only skips an element if
+      // told to look for it here. This is what lets the horizontal project
+      // rows receive their own wheel/trackpad input instead of Lenis
+      // converting it into vertical page scroll.
+      prevent: (node: HTMLElement) => !!node.closest("[data-lenis-prevent]"),
     });
 
     function raf(time: number) {

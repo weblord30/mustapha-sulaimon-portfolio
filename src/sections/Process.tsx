@@ -56,13 +56,12 @@ export function Process() {
 
       <div
         ref={trackRef}
-        data-lenis-prevent
-        className="flex w-max gap-5 overflow-x-auto px-6 pb-4 [scroll-snap-type:x_mandatory] [touch-action:pan-x] md:w-max md:gap-10 md:overflow-visible md:px-[max(1.5rem,calc((100vw-72rem)/2))] md:pb-0"
+        className="flex flex-col gap-5 px-6 md:w-max md:flex-row md:gap-10 md:overflow-visible md:px-[max(1.5rem,calc((100vw-72rem)/2))]"
       >
         {process.map((step) => (
           <div
             key={step.step}
-            className="flex h-80 w-[80vw] max-w-md flex-shrink-0 flex-col justify-between rounded-2xl border border-border bg-surface-2/60 p-8 [scroll-snap-align:center] sm:h-[22rem] md:w-[26rem]"
+            className="flex h-80 w-full flex-shrink-0 flex-col justify-between rounded-2xl border border-border bg-surface-2/60 p-8 sm:h-[22rem] md:w-[26rem]"
           >
             <span className="font-mono text-6xl font-medium text-border">{step.step}</span>
             <div>

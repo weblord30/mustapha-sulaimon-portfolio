@@ -17,7 +17,7 @@ export function ProjectPanel({ project, accent }: Props) {
 
   return (
     <div
-      className="relative flex h-[32rem] w-[85vw] max-w-xl flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface p-7 [scroll-snap-align:center] sm:w-[30rem]"
+      className="relative flex h-[32rem] w-full flex-shrink-0 flex-col overflow-hidden rounded-2xl border border-border bg-surface p-7 md:w-[30rem]"
       style={{
         backgroundImage: `radial-gradient(50% 40% at 90% 0%, ${tone.glow}, transparent 70%)`,
       }}

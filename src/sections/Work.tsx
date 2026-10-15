@@ -65,8 +65,7 @@ export function Work() {
 
       <div
         ref={trackRef}
-        data-lenis-prevent
-        className="flex w-max gap-5 overflow-x-auto px-6 pb-4 [scroll-snap-type:x_mandatory] [touch-action:pan-x] md:w-max md:gap-10 md:overflow-visible md:px-[max(1.5rem,calc((100vw-72rem)/2))] md:pb-0"
+        className="flex flex-col gap-5 px-6 md:w-max md:flex-row md:gap-10 md:overflow-visible md:px-[max(1.5rem,calc((100vw-72rem)/2))]"
       >
         {shipped.map((project, i) => (
           <ProjectPanel key={project.id} project={project} accent={ACCENTS[i % ACCENTS.length]} />
