@@ -104,6 +104,22 @@ export const projects: Project[] = [
     status: "live",
   },
   {
+    id: "mdwriters",
+    title: "MD Writers",
+    category: "Agency / Brand",
+    problem:
+      "My own ghostwriting and publishing agency: authors and founders with a book or a brand in their head and no time or craft to get it onto the page and published properly.",
+    decisions: [
+      "Service menu scoped to the actual range of the work: memoirs, ghostwriting, business books, editing, Amazon KDP launch prep, personal branding copy, and cover design, not a vague 'writing services' page.",
+      "Pricing shown upfront in Naira with a downloadable full price list, so a prospective client isn't stuck emailing just to find out if this is in budget.",
+      "WhatsApp as the primary contact path alongside a message form, since that's where this client base actually replies.",
+    ],
+    stack: ["HTML", "CSS", "JavaScript"],
+    link: "https://mdwriters.vercel.app",
+    year: "2025",
+    status: "live",
+  },
+  {
     id: "ledger",
     title: "Ledger",
     category: "FinTech / SaaS",
