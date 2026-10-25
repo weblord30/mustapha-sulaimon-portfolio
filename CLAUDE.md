@@ -5,13 +5,21 @@ it says where things actually stand and what not to redo. Also read
 `CASE_STUDIES_PLAN.md` right after this for the full project/case-study
 history; this file is the short pickup point.
 
-## Where we are right now (as of 2026-10-15)
+## Where we are right now (as of 2026-10-25)
 The Work section has been rebuilt and pushed to GitHub (origin/master),
-which auto-deploys to `themustaphasulaimon.vercel.app` via Vercel. Four
+which auto-deploys to `themustaphasulaimon.vercel.app` via Vercel. Six
 real, live projects are in `src/data/content.ts` with `status: "live"`,
 each with a small lazy-loaded iframe preview (`LivePreview.tsx`) and a
 "Visit" link:
 
+- **Westhomes** (westhomeshub.com) — client build for a property agency.
+  Astro on Cloudflare Workers free tier (D1, R2, Workers AI), Telegram
+  listing bot, daily email digests. Repo at
+  `C:\Users\cork\Documents\westhomes` (`PLAN.md` has everything).
+- **KonnectKWASU** (konnectkwasu.musbaftech.workers.dev) — the user's own
+  campus social app for Kwara State University, pre-launch (being pitched
+  to the SU). Expo + Supabase PWA, matric verification, E2E chat. Repo at
+  `C:\Users\cork\Documents\konnectKWASU` (`docs/PLAN.md`, `docs/NEXT.md`).
 - **KlassLab** (klasslab.vercel.app) — EdTech/LMS.
 - **SurgeNet** (surgenet.vercel.app) — WiFi hotspot billing portal, Next.js
   + Node.js + Paystack.

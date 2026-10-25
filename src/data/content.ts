@@ -56,6 +56,38 @@ export type Project = {
 
 export const projects: Project[] = [
   {
+    id: "westhomes",
+    title: "Westhomes",
+    category: "Real Estate / Client Build",
+    problem:
+      "A property agency ran its whole business through WhatsApp posts: listings buried in chats, enquiries missed whenever nobody was online, and a firm brief of no monthly fees.",
+    decisions: [
+      "Runs entirely on Cloudflare's free tier (Workers, D1, R2, Workers AI), so the client's only running cost is the yearly domain.",
+      "Staff post listings from Telegram: paste a listing the way it's written on WhatsApp and AI turns rent, agency, legal and caution into a preview, with approval for agents who can't publish.",
+      "Enquiries and live-chat handoffs land in the team's Telegram group instantly, and visitors get push alerts plus a job-site-style morning email of new matches.",
+    ],
+    stack: ["Astro", "Cloudflare Workers", "D1", "Workers AI", "Telegram Bot API"],
+    link: "https://westhomeshub.com",
+    year: "2026",
+    status: "live",
+  },
+  {
+    id: "konnectkwasu",
+    title: "KonnectKWASU",
+    category: "Campus Social / Mobile",
+    problem:
+      "Campus life at Kwara State University runs across scattered WhatsApp groups and Instagram pages, with no way to know who is really a student, deals done in DMs, and departments without an official voice.",
+    decisions: [
+      "Sign-up by matric number with ID verification, so every account is a real student or alumnus, and unverified accounts can browse but not post.",
+      "Chat is end-to-end encrypted from the start, across DMs, groups and the marketplace, with history restored on every device the student signs into.",
+      "One Expo codebase shipped first as an installable PWA that looks native on each phone, so students install from the website with no app store fees.",
+    ],
+    stack: ["Expo", "React Native", "TypeScript", "Supabase"],
+    link: "https://konnectkwasu.musbaftech.workers.dev",
+    year: "2026",
+    status: "live",
+  },
+  {
     id: "klasslab",
     title: "KlassLab",
     category: "EdTech / LMS",
