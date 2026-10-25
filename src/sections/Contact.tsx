@@ -1,48 +1,53 @@
 import { Reveal } from "../components/Reveal";
-import { profile } from "../data/content";
+import { Magnetic, Spread } from "../components/Motion";
+import { bookCall, profile } from "../data/content";
 
+/** Closing call to action and footer in one indigo block; bottom padding clears the iPhone home indicator. */
 export function Contact() {
-  const waLink = `https://wa.me/${profile.whatsapp.replace(/\D/g, "")}`;
-
+  const links = [
+    { label: "Email", href: `mailto:${profile.email}`, value: profile.email },
+    { label: "WhatsApp", href: bookCall, value: profile.whatsappDisplay },
+    { label: "LinkedIn", href: profile.linkedin, value: "mustapha-sulaimon" },
+    { label: "GitHub", href: profile.github, value: "weblord30" },
+  ];
   return (
-    <section id="contact" className="relative mx-auto max-w-4xl px-6 py-32 text-center">
-      <Reveal>
-        <span className="font-mono text-xs tracking-[0.3em] text-mint uppercase">Contact</span>
-        <h2 className="mt-4 font-display text-4xl leading-tight font-bold text-balance sm:text-6xl">
-          Let's build something worth shipping.
-        </h2>
-        <p className="mx-auto mt-6 max-w-md text-muted">
-          Open to full-stack, mobile, and UI/UX work. Reach out directly, I reply fast.
-        </p>
+    <Spread id="contact" className="relative scroll-mt-24 overflow-hidden bg-indigo text-starch">
+      <div className="adire-dots pointer-events-none absolute inset-0 text-starch/[0.06]" />
+      <div className="gutter relative mx-auto max-w-7xl pb-[max(2rem,env(safe-area-inset-bottom))] pt-20 md:pt-28">
+        <Reveal>
+          <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-starch/55">Contact</p>
+          <h2 className="mt-4 max-w-4xl font-display text-[clamp(2.9rem,8vw,6.5rem)] font-extrabold leading-[0.92] tracking-tight">
+            Let's build something <span className="text-coral">on purpose.</span>
+          </h2>
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-starch/75">
+            Products, client builds, AI work or a second pair of hands on your team. I reply fastest on WhatsApp.
+          </p>
+          <div className="mt-8 flex flex-wrap gap-3">
+            <Magnetic>
+              <a href={bookCall} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-coral px-6 font-medium text-starch">
+                Book a call <span aria-hidden>→</span>
+              </a>
+            </Magnetic>
+            <a href={profile.cv} download className="inline-flex min-h-12 items-center gap-2 rounded-full border border-starch/30 px-6 font-medium transition-colors hover:border-starch">
+              Download CV <span aria-hidden>↓</span>
+            </a>
+          </div>
+        </Reveal>
 
-        <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href={`mailto:${profile.email}`}
-            className="rounded-full bg-text px-7 py-3 font-mono text-sm text-ground transition-transform hover:scale-[1.03]"
-          >
-            {profile.email}
-          </a>
-          <a
-            href={waLink}
-            target="_blank"
-            rel="noreferrer"
-            className="rounded-full border border-border px-7 py-3 font-mono text-sm text-text transition-colors hover:bg-white/5"
-          >
-            WhatsApp
-          </a>
+        <div className="mt-14 grid gap-px overflow-hidden rounded-2xl border border-starch/10 bg-starch/10 sm:grid-cols-2 lg:grid-cols-4">
+          {links.map((l) => (
+            <a key={l.label} href={l.href} target={l.href.startsWith("http") ? "_blank" : undefined} rel="noopener" className="group bg-indigo p-5 transition-colors hover:bg-indigo-2">
+              <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-starch/50">{l.label}</p>
+              <p className="mt-2 flex items-center justify-between gap-2 truncate font-medium">{l.value} <span aria-hidden className="text-coral transition-transform group-hover:translate-x-1">↗</span></p>
+            </a>
+          ))}
         </div>
 
-        <div className="mt-8">
-          <a
-            href={profile.linkedin}
-            target="_blank"
-            rel="noreferrer"
-            className="font-mono text-xs tracking-wide text-muted underline decoration-border underline-offset-4 transition-colors hover:text-mint"
-          >
-            LinkedIn ↗
-          </a>
-        </div>
-      </Reveal>
-    </section>
+        <footer className="mt-16 flex flex-col items-start justify-between gap-6 border-t border-starch/10 pt-8 sm:flex-row sm:items-center">
+          <img src="/logo-wordmark.svg" alt={profile.name} className="h-8 w-auto" />
+          <p className="font-mono text-[11px] text-starch/50">© {new Date().getFullYear()} {profile.name} · Designed and built by me</p>
+        </footer>
+      </div>
+    </Spread>
   );
 }

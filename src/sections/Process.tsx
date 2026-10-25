@@ -1,76 +1,28 @@
-import { useEffect, useRef } from "react";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Reveal } from "../components/Reveal";
+import { SplitTitle } from "../components/Motion";
 import { process } from "../data/content";
 
-gsap.registerPlugin(ScrollTrigger);
-
 export function Process() {
-  const sectionRef = useRef<HTMLElement>(null);
-  const trackRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduceMotion) return;
-
-    const section = sectionRef.current;
-    const track = trackRef.current;
-    if (!section || !track) return;
-
-    // Pinned scroll-jacking only above tablet width. On phones it fights
-    // native scroll and feels broken, so mobile gets a plain scroll-snap row.
-    const mm = gsap.matchMedia();
-
-    mm.add("(min-width: 768px)", () => {
-      const scrollDistance = () => track.scrollWidth - section.clientWidth;
-
-      const tween = gsap.to(track, {
-        x: () => -scrollDistance(),
-        ease: "none",
-      });
-
-      const trigger = ScrollTrigger.create({
-        trigger: section,
-        start: "top top",
-        end: () => `+=${scrollDistance()}`,
-        scrub: 0.5,
-        pin: true,
-        animation: tween,
-        invalidateOnRefresh: true,
-      });
-
-      return () => trigger.kill();
-    });
-
-    return () => mm.revert();
-  }, []);
-
   return (
-    <section id="process" ref={sectionRef} className="relative overflow-hidden bg-surface/30 py-24 md:py-32">
-      <div className="mx-auto mb-12 max-w-6xl px-6 md:mb-16">
-        <span className="font-mono text-xs tracking-[0.3em] text-mint uppercase">Process</span>
-        <h2 className="mt-4 font-display text-3xl leading-tight font-bold sm:text-4xl">
-          How the work actually gets done.
-        </h2>
-      </div>
-
-      <div
-        ref={trackRef}
-        className="flex flex-col gap-5 px-6 md:w-max md:flex-row md:gap-10 md:overflow-visible md:px-[max(1.5rem,calc((100vw-72rem)/2))]"
-      >
-        {process.map((step) => (
-          <div
-            key={step.step}
-            className="flex h-80 w-full flex-shrink-0 flex-col justify-between rounded-2xl border border-border bg-surface-2/60 p-8 sm:h-[22rem] md:w-[26rem]"
-          >
-            <span className="font-mono text-6xl font-medium text-border">{step.step}</span>
-            <div>
-              <h3 className="font-display text-2xl font-bold">{step.title}</h3>
-              <p className="mt-3 leading-relaxed text-muted">{step.description}</p>
-            </div>
-          </div>
+    <section id="process" className="gutter mx-auto max-w-7xl scroll-mt-24 py-16 md:py-24">
+      <Reveal>
+        <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">How I work</p>
+      </Reveal>
+      <SplitTitle text="One person," accent="the whole thread." className="mt-3 max-w-2xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight md:text-6xl" />
+      {/* A stitched line runs through the steps: across on desktop, down on mobile. */}
+      <ol className="relative mt-12 grid gap-8 md:grid-cols-4 md:gap-6">
+        <span aria-hidden className="adire-stitch absolute left-[11px] top-3 h-[calc(100%-1.5rem)] w-[2px] rotate-0 text-coral/60 md:left-3 md:right-3 md:top-[11px] md:h-[2px] md:w-auto" />
+        {process.map((s, i) => (
+          <Reveal key={s.step} delay={i * 0.08}>
+            <li className="relative pl-10 md:pl-0 md:pt-10">
+              <span className="absolute left-0 top-0 flex h-6 w-6 items-center justify-center rounded-full bg-coral font-mono text-[10px] font-bold text-starch">{i + 1}</span>
+              <p className="font-mono text-[10.5px] uppercase tracking-[0.16em] text-muted">Step {s.step}</p>
+              <p className="mt-1 font-display text-3xl font-extrabold tracking-tight">{s.title}</p>
+              <p className="mt-2 text-[15px] leading-relaxed text-ink/70">{s.description}</p>
+            </li>
+          </Reveal>
         ))}
-      </div>
+      </ol>
     </section>
   );
 }

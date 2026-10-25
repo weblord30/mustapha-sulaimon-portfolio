@@ -1,32 +1,56 @@
 import { Reveal } from "../components/Reveal";
-import { profile, skills } from "../data/content";
+import { SplitTitle } from "../components/Motion";
+import { experience, profile, skills } from "../data/content";
 
 export function About() {
   return (
-    <section id="about" className="relative mx-auto max-w-6xl px-6 py-32">
-      <div className="grid gap-16 md:grid-cols-2 md:gap-8">
-        <Reveal>
-          <span className="font-mono text-xs tracking-[0.3em] text-mint uppercase">About</span>
-          <h2 className="mt-4 font-display text-3xl leading-tight font-bold text-balance sm:text-4xl">
-            {profile.yearsExperience}+ years building software end to end.
-          </h2>
-          <p className="mt-6 text-base leading-relaxed text-muted sm:text-lg">
-            {profile.bio}
-          </p>
-        </Reveal>
+    <section id="about" className="gutter mx-auto max-w-7xl scroll-mt-24 py-16 md:py-24">
+      <div className="grid gap-12 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+        <div>
+          <Reveal>
+            <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">About</p>
+          </Reveal>
+          <SplitTitle text="Built here." accent="Made on purpose." accentClass="text-coral" className="mt-5 font-display text-5xl font-extrabold leading-[0.98] tracking-tight md:text-6xl" />
+          <Reveal delay={0.08}>
+            <div className="mt-8 max-w-2xl space-y-5 text-[17px] leading-relaxed text-ink/80">
+              <p>
+                I'm {profile.fullName}. My oriki, the Yoruba praise name I was given, is {profile.oriki}: {profile.orikiMeaning}. Olabode means wealth
+                has come home. Between them is how I work: everything I build is made on purpose, and it's built here in Nigeria for anywhere.
+              </p>
+              <p>{profile.bio}</p>
+              <p>
+                I studied Computer Science at Kwara State University, where my final-year research taught a neural network to make digital
+                banking readable in Yoruba. Outside client work I publish books, teach Python, and build products I'd want to use myself.
+              </p>
+            </div>
+          </Reveal>
+        </div>
 
-        <Reveal delay={0.15}>
-          <div className="relative flex h-72 flex-wrap content-center items-center justify-center gap-3 rounded-2xl border border-border bg-surface/40 p-8">
-            {skills.map((skill) => (
-              <span
-                key={skill}
-                className="rounded-full border border-border bg-surface-2/60 px-3.5 py-1.5 font-mono text-xs text-muted transition-colors hover:border-violet/40 hover:text-text"
-              >
-                {skill}
-              </span>
+        <Reveal delay={0.12}>
+          <ol className="relative border-l border-dashed border-ink/25 pl-7">
+            {experience.map((e) => (
+              <li key={e.role} className="relative pb-7 last:pb-0">
+                <span className="absolute -left-[33px] top-1.5 h-3 w-3 rounded-full border-2 border-starch bg-indigo" />
+                <p className="font-mono text-[10.5px] uppercase tracking-[0.14em] text-muted">{e.period} · {e.org}</p>
+                <p className="mt-1 font-display text-xl font-extrabold tracking-tight">{e.role}</p>
+                <p className="mt-1 text-[14px] leading-relaxed text-ink/70">{e.detail}</p>
+              </li>
             ))}
-          </div>
+          </ol>
         </Reveal>
+      </div>
+
+      <div className="mt-16 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        {skills.map((g, i) => (
+          <Reveal key={g.group} delay={i * 0.05}>
+            <div className="h-full rounded-2xl border border-line bg-paper p-5">
+              <p className="font-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-indigo">{g.group}</p>
+              <div className="mt-4 flex flex-wrap gap-1.5">
+                {g.items.map((s) => <span key={s} className="rounded-full bg-sand px-2.5 py-1 text-[13px] text-ink/80">{s}</span>)}
+              </div>
+            </div>
+          </Reveal>
+        ))}
       </div>
     </section>
   );
