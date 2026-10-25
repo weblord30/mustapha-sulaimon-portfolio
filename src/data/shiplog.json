@@ -1,6 +1,6 @@
 {
  "updated": "2026-10-25",
- "total": 230,
+ "total": 232,
  "days": [
   {
    "date": "2025-10-26",
@@ -1465,6 +1465,16 @@
  ],
  "recent": [
   {
+   "date": "2026-10-26",
+   "project": "Portfolio",
+   "message": "Motion pass: cloth intro on a wire, unfolding hero cloth with fabric ripple, custom cursor-i, paper sheets, typed shipping log, title reveals, magnetic buttons, skills ribbon, back to top"
+  },
+  {
+   "date": "2026-10-26",
+   "project": "Portfolio",
+   "message": "Adire edition: new identity, generative hero, Now + shipping log, filterable work, Lab, CV"
+  },
+  {
    "date": "2026-10-25",
    "project": "Westhomes",
    "message": "Daily domain renewal check: Telegram warnings at 60/30/14/7/3/1 days, shown on System Health"
@@ -1483,11 +1493,6 @@
    "date": "2026-10-25",
    "project": "Portfolio",
    "message": "New identity: M-cursor icon in nav, wordmark in footer, favicon and touch icon"
-  },
-  {
-   "date": "2026-10-25",
-   "project": "Portfolio",
-   "message": "Add Westhomes and KonnectKWASU as live projects"
   },
   {
    "date": "2026-10-21",
@@ -1518,11 +1523,6 @@
    "date": "2026-10-19",
    "project": "GREady",
    "message": "Full setup after sign-up for everyone (confirm email, about you with country, username and bio, goal and exam date, week, schools, diagnostic); free accounts see how much of each allowance they have used on the Pro page"
-  },
-  {
-   "date": "2026-10-15",
-   "project": "Portfolio",
-   "message": "Add MD Writers as a fourth live project"
   }
  ]
 }
