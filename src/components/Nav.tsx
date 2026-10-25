@@ -33,6 +33,9 @@ export function Nav() {
         >
           {/* Desktop / tablet pill nav */}
           <div className="hidden items-center gap-1 rounded-full border border-border bg-surface/80 px-2 py-2 shadow-[0_8px_30px_rgba(0,0,0,0.4)] backdrop-blur-md sm:flex">
+            <a href="#" aria-label="Mustapha Sulaimon, back to top" className="mr-1 flex items-center rounded-full pl-1">
+              <img src="/logo-icon.svg" alt="" className="h-7 w-7" />
+            </a>
             {LINKS.map((link) => (
               <a
                 key={link.href}
