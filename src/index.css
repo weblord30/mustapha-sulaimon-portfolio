@@ -204,3 +204,25 @@ html[data-theme="night"] .on-dark { --color-starch: #f6f3ec; --color-ink: #0b0d1
 .wordmark .wm-night { display: none; }
 html[data-theme="night"] .wordmark .wm-day { display: none; }
 html[data-theme="night"] .wordmark .wm-night { display: block; }
+
+/* ---------- Case sheets: paper that unfolds open and folds back up ---------- */
+.case-backdrop { animation: case-fade .4s ease both; }
+.case-backdrop.is-closing { animation: case-fade-out .6s ease .1s both; }
+@keyframes case-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes case-fade-out { from { opacity: 1; } to { opacity: 0; } }
+.case-sheet { transform-origin: 50% 0%; animation: case-unfold .85s cubic-bezier(.16,1,.3,1) both; }
+.case-sheet.is-closing { animation: case-fold .6s cubic-bezier(.65,0,.35,1) both; }
+@keyframes case-unfold {
+  0% { transform: perspective(1600px) rotateX(-70deg) scaleY(.25); clip-path: inset(0 0 60% 0 round 28px); }
+  45% { transform: perspective(1600px) rotateX(8deg) scaleY(.85); clip-path: inset(0 0 15% 0 round 28px); }
+  100% { transform: none; clip-path: inset(0 0 0 0 round 28px); }
+}
+@keyframes case-fold {
+  0% { transform: none; clip-path: inset(0 0 0 0 round 28px); }
+  100% { transform: perspective(1600px) rotateX(-75deg) scaleY(.2); clip-path: inset(0 0 70% 0 round 28px); opacity: 0; }
+}
+/* The crease line that sweeps down as the paper opens. */
+.case-crease { position: absolute; left: 0; right: 0; height: 40px; z-index: 5; pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(0,0,0,.12) 50%, transparent); animation: crease .85s ease both; }
+@keyframes crease { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .case-sheet, .case-sheet.is-closing, .case-crease { animation: none !important; } }

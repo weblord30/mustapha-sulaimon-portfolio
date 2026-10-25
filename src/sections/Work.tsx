@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { CaseSheet } from "../components/CaseSheet";
 import { ProjectCard } from "../components/ProjectCard";
 import { Reveal } from "../components/Reveal";
 import { PaperIn, SplitTitle } from "../components/Motion";
@@ -6,6 +7,15 @@ import { KINDS, projects, type Kind } from "../data/content";
 
 export function Work() {
   const [filter, setFilter] = useState<Kind | "all">("all");
+  // Open case from the URL (#case-westhomes) so a single project can be shared.
+  const [openId, setOpenId] = useState<string | null>(() => (location.hash.startsWith("#case-") ? location.hash.slice(6) : null));
+  useEffect(() => {
+    const onHash = () => setOpenId(location.hash.startsWith("#case-") ? location.hash.slice(6) : null);
+    window.addEventListener("hashchange", onHash);
+    return () => window.removeEventListener("hashchange", onHash);
+  }, []);
+  const open = (id: string) => { history.replaceState(null, "", `#case-${id}`); setOpenId(id); };
+  const close = () => { history.replaceState(null, "", location.pathname + location.search); setOpenId(null); };
   const live = projects.filter((p) => p.status === "live");
   const shown = filter === "all" ? live : live.filter((p) => p.kinds.includes(filter));
 
@@ -36,10 +46,11 @@ export function Work() {
       <div className="mt-10 grid gap-6 md:grid-cols-2">
         {shown.map((p, i) => (
           <PaperIn key={`${filter}-${p.id}`} index={i} className="h-full">
-            <ProjectCard project={p} index={live.indexOf(p)} />
+            <ProjectCard project={p} index={live.indexOf(p)} onOpen={() => open(p.id)} />
           </PaperIn>
         ))}
       </div>
+      {openId && live.find((p) => p.id === openId) && <CaseSheet project={live.find((p) => p.id === openId)!} onClose={close} />}
     </section>
   );
 }
