@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { swish } from "../lib/prefs";
 
 const LINE1 = "Mustapha";
 const LINE2 = "Sulaimon";
@@ -28,6 +29,7 @@ export function Intro() {
     for (let i = 1; i <= total; i++) timers.push(window.setTimeout(() => setTyped(i), 260 + i * 70));
     const finish = () => {
       setLeaving(true);
+      swish(0.9);
       document.documentElement.classList.add("ready");
       timers.push(window.setTimeout(() => { setGone(true); document.documentElement.style.overflow = ""; }, 1100));
     };
@@ -42,7 +44,7 @@ export function Intro() {
   const b = LINE2.slice(0, Math.max(0, typed - LINE1.length));
 
   return (
-    <div className={`intro ${leaving ? "intro-leave" : ""}`} onClick={() => { setTyped(total); setLeaving(true); document.documentElement.classList.add("ready"); window.setTimeout(() => { setGone(true); document.documentElement.style.overflow = ""; }, 1100); }}>
+    <div className={`intro on-dark ${leaving ? "intro-leave" : ""}`} onClick={() => { setTyped(total); setLeaving(true); document.documentElement.classList.add("ready"); window.setTimeout(() => { setGone(true); document.documentElement.style.overflow = ""; }, 1100); }}>
       {/* The wire and its pegs */}
       <div className="intro-wire" style={{ top: "calc(env(safe-area-inset-top) + 28px)" }}>
         <span className="intro-peg" style={{ left: "18%" }} />

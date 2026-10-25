@@ -13,7 +13,7 @@ export function Ribbon() {
     </div>
   );
   return (
-    <div className="ribbon relative -rotate-[1.2deg] overflow-hidden bg-indigo py-5 text-starch" aria-label="Skills">
+    <div className="ribbon on-dark relative -rotate-[1.2deg] overflow-hidden bg-indigo py-5 text-starch" aria-label="Skills">
       <div className="adire-stitch absolute inset-x-0 top-2 text-starch/30" />
       <div className="ribbon-track">{row}{row}</div>
       <div className="adire-stitch absolute inset-x-0 bottom-2 text-starch/30" />

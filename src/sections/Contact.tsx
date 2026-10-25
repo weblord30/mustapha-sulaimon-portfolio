@@ -11,7 +11,7 @@ export function Contact() {
     { label: "GitHub", href: profile.github, value: "weblord30" },
   ];
   return (
-    <Spread id="contact" className="relative scroll-mt-24 overflow-hidden bg-indigo text-starch">
+    <Spread id="contact" className="on-dark relative scroll-mt-24 overflow-hidden bg-indigo text-starch">
       <div className="adire-dots pointer-events-none absolute inset-0 text-starch/[0.06]" />
       <div className="gutter relative mx-auto max-w-7xl pb-[max(2rem,env(safe-area-inset-bottom))] pt-20 md:pt-28">
         <Reveal>
