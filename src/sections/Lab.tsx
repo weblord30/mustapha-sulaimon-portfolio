@@ -5,7 +5,7 @@ import { lab } from "../data/content";
 /** Experiments and personal work. The love letter is shown as an abstract piece only: no names, photos or song. */
 export function Lab() {
   return (
-    <Spread id="lab" className="scroll-mt-24 bg-indigo-deep py-16 text-starch md:py-24">
+    <Spread id="lab" className="on-dark scroll-mt-24 bg-indigo-deep py-16 text-starch md:py-24">
       <div className="gutter mx-auto max-w-7xl">
         <Reveal>
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-starch/50">The lab</p>
@@ -62,7 +62,7 @@ function Heart() {
 
 function Brand() {
   return (
-    <div className="flex h-full w-full items-center justify-center gap-[6%] bg-starch p-6">
+    <div className="always-light flex h-full w-full items-center justify-center gap-[6%] p-6">
       <img src="/logo-wordmark-light.svg" alt="Mustapha Sulaimon wordmark" className="w-[52%]" />
       <img src="/seal.svg" alt="" className="w-[28%]" />
       <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 overflow-hidden rounded-full border border-line">

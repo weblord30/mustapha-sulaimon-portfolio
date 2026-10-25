@@ -81,7 +81,7 @@ export function BackToTop() {
   }, []);
   return (
     <a href="#top" aria-label="Back to top"
-      className={`fixed z-40 flex h-12 w-12 items-center justify-center rounded-full bg-indigo shadow-[0_12px_30px_-10px_rgba(26,36,102,0.8)] transition-all duration-500 ${on ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0"}`}
+      className={`on-dark fixed z-40 flex h-12 w-12 items-center justify-center rounded-full bg-indigo shadow-[0_12px_30px_-10px_rgba(26,36,102,0.8)] transition-all duration-500 ${on ? "translate-y-0 opacity-100" : "pointer-events-none translate-y-6 opacity-0"}`}
       style={{ right: "max(1.25rem, env(safe-area-inset-right))", bottom: "max(1.25rem, calc(env(safe-area-inset-bottom) + 0.5rem))" }}>
       <span className="relative flex flex-col items-center">
         <span className="h-2 w-2 rounded-full bg-coral" />

@@ -35,7 +35,7 @@ export function Now() {
         </div>
 
         <Reveal delay={0.1} className="h-full">
-          <div className="flex h-full flex-col overflow-hidden rounded-2xl bg-indigo text-starch">
+          <div className="on-dark flex h-full flex-col overflow-hidden rounded-2xl bg-indigo text-starch">
             <div className="flex items-center gap-1.5 border-b border-starch/10 px-4 py-3">
               <span className="h-2.5 w-2.5 rounded-full bg-coral" /><span className="h-2.5 w-2.5 rounded-full bg-starch/25" /><span className="h-2.5 w-2.5 rounded-full bg-starch/25" />
               <span className="ml-2 font-mono text-[11px] text-starch/60">~/shipping-log</span>

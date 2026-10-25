@@ -177,3 +177,30 @@ html:not(.ready) .hero-cloth { transform: perspective(1400px) rotateX(-88deg) sc
 @media (prefers-reduced-motion: reduce) {
   .ribbon-track, .intro-cloth, .hero-cloth { animation: none !important; transform: none !important; }
 }
+
+/* ---------- Indigo Night: the page dyed in the indigo pot ---------- */
+html[data-theme="night"] {
+  --color-starch: #0c1233;
+  --color-paper: #131b47;
+  --color-sand: #1b2459;
+  --color-line: #28336f;
+  --color-ink: #f1ede4;
+  --color-muted: #9aa3c9;
+  --color-indigo-deep: #070b24;
+  color-scheme: dark;
+}
+html[data-theme="night"] .text-indigo { color: #a9b6ff; }
+html[data-theme="night"] .bg-indigo { background-color: #1d2a7a; }
+html[data-theme="night"] .wordmark .wm-l1, html[data-theme="night"] .wordmark .wm-l2, html[data-theme="night"] .wordmark .wm-oriki { fill: var(--color-ink); }
+html[data-theme="night"] .grain { opacity: .18; mix-blend-mode: screen; }
+html[data-theme="night"] .hero-wire, html[data-theme="night"] .intro-wire { background: rgba(241,237,228,.45); }
+html[data-theme="night"] .dogear::after { background: linear-gradient(225deg, var(--color-starch) 50%, rgba(0,0,0,.3) 50%, var(--color-sand) 60%); }
+html { transition: background-color .5s ease; }
+body, header, section, article { transition: background-color .5s ease, color .5s ease, border-color .5s ease; }
+/* Things that must stay on light cloth whatever the theme. */
+.always-light { background-color: #f6f3ec !important; }
+/* Dark cloth sections keep light-on-indigo colours in both themes. */
+html[data-theme="night"] .on-dark { --color-starch: #f6f3ec; --color-ink: #0b0d12; --color-indigo-deep: #10173f; --color-line: #ddd6c7; }
+.wordmark .wm-night { display: none; }
+html[data-theme="night"] .wordmark .wm-day { display: none; }
+html[data-theme="night"] .wordmark .wm-night { display: block; }

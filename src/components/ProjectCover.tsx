@@ -3,7 +3,7 @@ import type { Cover } from "../data/content";
 /** Covers for projects with no public site, drawn in code. Every detail on them is real. */
 export function ProjectCover({ kind }: { kind: Cover }) {
   return (
-    <div className="relative h-full w-full overflow-hidden bg-indigo text-starch">
+    <div className="on-dark relative h-full w-full overflow-hidden bg-indigo text-starch">
       <div className="adire-dots absolute inset-0 text-starch/[0.07]" />
       <div className="relative flex h-full w-full items-center justify-center p-5 sm:p-8">
         {kind === "llm" && <Llm />}
