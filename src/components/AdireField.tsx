@@ -28,9 +28,64 @@ const MOTIFS: Motif[] = [
   },
 ];
 
+/** Paints the flat cloth (pattern + seal) into a texture canvas. */
+function paintTexture(tex: HTMLCanvasElement, w: number, h: number, dpr: number, t: number, seal: HTMLImageElement | null) {
+  const c = tex.getContext("2d")!;
+  tex.width = Math.round(w * dpr); tex.height = Math.round(h * dpr);
+  c.setTransform(dpr, 0, 0, dpr, 0, 0);
+  c.fillStyle = INDIGO; c.fillRect(0, 0, w, h);
+  const cols = w < 420 ? 5 : 7, s = w / cols, rows = Math.ceil(h / s);
+  c.lineWidth = Math.max(1.2, s * 0.022); c.lineCap = "round";
+  for (let i = 0; i < cols; i++) for (let j = 0; j < rows; j++) {
+    const bead = (i * 7 + j * 3) % 11 === 0;
+    c.save(); c.translate((i + 0.5) * s, (j + 0.5) * s); c.rotate(((i + j) % 2 ? 1 : -1) * Math.sin(t / 2600 + i * 0.7 + j) * 0.05); c.scale(0.86, 0.86);
+    c.strokeStyle = bead ? CORAL : STARCH; c.fillStyle = bead ? CORAL : STARCH;
+    MOTIFS[(i * 3 + j * 5) % MOTIFS.length](c, s); c.restore();
+  }
+  c.strokeStyle = "rgba(246,243,236,0.14)"; c.lineWidth = 1; c.setLineDash([3, 5]);
+  for (let i = 1; i < cols; i++) { c.beginPath(); c.moveTo(i * s, 0); c.lineTo(i * s, h); c.stroke(); }
+  for (let j = 1; j < rows; j++) { c.beginPath(); c.moveTo(0, j * s); c.lineTo(w, j * s); c.stroke(); }
+  c.setLineDash([]);
+  if (seal?.complete && seal.naturalWidth) {
+    const sw = w * 0.44;
+    c.save(); c.shadowColor = "rgba(0,0,0,0.35)"; c.shadowBlur = 24; c.shadowOffsetY = 14;
+    c.drawImage(seal, (w - sw) / 2, (h - sw) / 2, sw, sw); c.restore();
+  }
+}
+
+/** Affine-maps one texture triangle onto a screen triangle (classic canvas mesh trick). */
+function tri(ctx: CanvasRenderingContext2D, img: HTMLCanvasElement, k: number,
+  x0: number, y0: number, x1: number, y1: number, x2: number, y2: number,
+  u0: number, v0: number, u1: number, v1: number, u2: number, v2: number,
+  sx: number, sy: number, sw: number, sh: number) {
+  ctx.save();
+  // Grow the clip triangle a hair from its centroid so neighbouring triangles leave no seams.
+  const cx = (x0 + x1 + x2) / 3, cy = (y0 + y1 + y2) / 3, g = 1.04;
+  ctx.beginPath();
+  ctx.moveTo(cx + (x0 - cx) * g, cy + (y0 - cy) * g); ctx.lineTo(cx + (x1 - cx) * g, cy + (y1 - cy) * g); ctx.lineTo(cx + (x2 - cx) * g, cy + (y2 - cy) * g);
+  ctx.closePath(); ctx.clip();
+  u0 *= k; v0 *= k; u1 *= k; v1 *= k; u2 *= k; v2 *= k;
+  const d = u0 * v1 + v0 * u2 + u1 * v2 - v1 * u2 - v0 * u1 - u0 * v2;
+  if (Math.abs(d) < 1e-6) { ctx.restore(); return; }
+  const a = (x0 * v1 + v0 * x2 + x1 * v2 - v1 * x2 - v0 * x1 - x0 * v2) / d;
+  const b = (u0 * x1 + x0 * u2 + u1 * x2 - x1 * u2 - x0 * u1 - u0 * x2) / d;
+  const c = (u0 * v1 * x2 + v0 * x1 * u2 + x0 * u1 * v2 - x0 * v1 * u2 - v0 * u1 * x2 - u0 * x1 * v2) / d;
+  const e = (y0 * v1 + v0 * y2 + y1 * v2 - v1 * y2 - v0 * y1 - y0 * v2) / d;
+  const f = (u0 * y1 + y0 * u2 + u1 * y2 - y1 * u2 - y0 * u1 - u0 * y2) / d;
+  const g2 = (u0 * v1 * y2 + v0 * y1 * u2 + y0 * u1 * v2 - y0 * v1 * u2 - v0 * u1 * y2 - u0 * y1 * v2) / d;
+  ctx.transform(a, e, b, f, c, g2);
+  // Only this cell's patch of texture: drawing the whole texture per triangle is ~200x the pixel work.
+  ctx.drawImage(img, sx, sy, sw, sh, sx, sy, sw, sh);
+  ctx.restore();
+}
+
+type Pt = { x: number; y: number; px: number; py: number; pin: boolean; x0: number };
+
 /**
- * A generative Adire cloth drawn on canvas. Motifs lean towards the pointer (mouse or finger).
- * Pauses when off-screen and draws a single still frame for reduced-motion users.
+ * The hero cloth: the Adire pattern and seal painted on a mesh that hangs from the wire with real
+ * physics (Verlet). Sags under gravity, billows in a breeze, gusts on scroll, and can be grabbed and
+ * dragged by mouse or finger. Lighter mesh on phones; a still cloth for reduced-motion visitors.
+ * Pauses when off-screen.
  */
 export function AdireField({ className = "" }: { className?: string }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -41,79 +96,114 @@ export function AdireField({ className = "" }: { className?: string }) {
     if (!canvas || !ctx) return;
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
-    const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4 };
-    let w = 0, h = 0, raf = 0, running = false;
-    let wind = 0, lastScroll = window.scrollY, tilt = 0;
-    // Phone tilt where the browser allows it without a permission prompt (Android); iOS simply skips it.
-    const onTilt = (e: DeviceOrientationEvent) => { tilt += ((e.gamma ?? 0) / 3 - tilt) * 0.1; };
-    window.addEventListener("deviceorientation", onTilt);
+    const tex = document.createElement("canvas");
+    const seal = new Image(); seal.src = "/seal.svg";
+    // The cloth hangs inside a larger canvas so it can swing past its resting edges.
+    const MX = 0.08, MB = 0.12;
+    let W = 0, H = 0, cw = 0, ch = 0, ox = 0, raf = 0, running = false, frame = 0;
+    let pts: Pt[][] = [], COLS = 0, ROWS = 0, rx = 0, ry = 0;
+    let wind = 0, lastScroll = window.scrollY;
+    // Touch screens get gentler gusts so the cloth never swings off a narrow screen.
+    const coarse = !window.matchMedia("(pointer: fine)").matches, calm = coarse ? 0.5 : 1;
+    const ptr = { x: -1e4, y: -1e4, vx: 0, vy: 0, down: false, grab: null as Pt | null };
 
-    function draw(t: number) {
-      if (!ctx) return;
-      pointer.x += (pointer.tx - pointer.x) * 0.12;
-      pointer.y += (pointer.ty - pointer.y) * 0.12;
-      ctx.fillStyle = INDIGO;
-      ctx.fillRect(0, 0, w, h);
-      const cols = w < 420 ? 5 : 7, s = w / cols, rows = Math.ceil(h / s);
-      ctx.lineWidth = Math.max(1.2, s * 0.022);
-      ctx.lineCap = "round";
-      // Fabric ripple: a travelling wave plus a kick from scroll speed and phone tilt.
-      wind += (Math.min(18, Math.abs(window.scrollY - lastScroll)) - wind) * 0.08;
+    function build() {
+      W = canvas!.clientWidth; H = canvas!.clientHeight;
+      canvas!.width = Math.round(W * dpr); canvas!.height = Math.round(H * dpr);
+      cw = W / (1 + 2 * MX); ch = H / (1 + MB); ox = cw * MX;
+      const fine = window.matchMedia("(pointer: fine)").matches;
+      COLS = fine ? 15 : 10; ROWS = fine ? 15 : 10;
+      rx = cw / (COLS - 1); ry = ch / (ROWS - 1);
+      pts = [];
+      for (let j = 0; j < ROWS; j++) {
+        const row: Pt[] = [];
+        for (let i = 0; i < COLS; i++) { const x = ox + i * rx, y = j * ry; row.push({ x, y, px: x, py: y, pin: j === 0, x0: x }); }
+        pts.push(row);
+      }
+      paintTexture(tex, cw, ch, dpr, performance.now(), seal);
+    }
+
+    const fixed = (p: Pt) => p.pin || p === ptr.grab;
+    function satisfy(a: Pt, b: Pt, rest: number) {
+      const fa = fixed(a), fb = fixed(b);
+      if (fa && fb) return;
+      const dx = b.x - a.x, dy = b.y - a.y, dist = Math.hypot(dx, dy) || 1e-6, diff = (dist - rest) / dist;
+      const wa = fa ? 0 : fb ? 1 : 0.5, wb = fb ? 0 : fa ? 1 : 0.5;
+      a.x += dx * diff * wa; a.y += dy * diff * wa;
+      b.x -= dx * diff * wb; b.y -= dy * diff * wb;
+    }
+
+    function step(t: number) {
+      wind += (Math.min(30, Math.abs(window.scrollY - lastScroll)) - wind) * 0.1;
       lastScroll = window.scrollY;
-      const amp = s * (0.035 + wind * 0.006) + Math.abs(tilt) * 0.12;
-      for (let i = 0; i < cols; i++) {
-        for (let j = 0; j < rows; j++) {
-          const wave = Math.sin(t / 900 + i * 0.75 + j * 0.35 + tilt * 0.05);
-          const cx = (i + 0.5) * s + wave * amp, cy = (j + 0.5) * s + Math.cos(t / 1150 + j * 0.6) * amp * 0.6;
-          const d = Math.hypot(cx - pointer.x, cy - pointer.y);
-          const k = Math.max(0, 1 - d / (s * 2.4));
-          const bead = (i * 7 + j * 3) % 11 === 0;
-          ctx.save();
-          ctx.translate(cx, cy);
-          ctx.rotate(((i + j) % 2 ? 1 : -1) * (k * 0.9 + Math.sin(t / 2600 + i * 0.7 + j) * 0.05));
-          ctx.scale(0.86 + k * 0.22, 0.86 + k * 0.22);
-          ctx.strokeStyle = bead ? CORAL : STARCH;
-          ctx.fillStyle = bead ? CORAL : STARCH;
-          MOTIFS[(i * 3 + j * 5) % MOTIFS.length](ctx, s);
-          ctx.restore();
+      const breeze = Math.sin(t / 1400) * 0.06 + Math.sin(t / 530) * 0.03;
+      const lim = cw * (coarse ? 0.07 : 0.12); // how far the cloth may swing sideways from where it hangs
+      for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
+        const p = pts[j][i];
+        if (p.pin || p === ptr.grab) continue;
+        const vx = (p.x - p.px) * 0.985, vy = (p.y - p.py) * 0.985;
+        p.px = p.x; p.py = p.y;
+        const depth = j / (ROWS - 1);
+        const gust = (breeze + wind * 0.012 * Math.sin(t / 300 + i * 0.4)) * depth * 9;
+        p.x += vx + gust * Math.sin(t / 700 + j * 0.5) * calm;
+        p.y += vy + 0.32 + Math.abs(gust) * 0.05;
+        // Brush: the pointer pushes cloth it moves through.
+        const d = Math.hypot(p.x - ptr.x, p.y - ptr.y);
+        if (d < rx * 1.6 && !ptr.down) { p.x += ptr.vx * 0.35 * (1 - d / (rx * 1.6)); p.y += ptr.vy * 0.35 * (1 - d / (rx * 1.6)); }
+      }
+      for (const row of pts) for (const p of row) if (p !== ptr.grab) p.x = Math.max(p.x0 - lim, Math.min(p.x0 + lim, p.x));
+      if (ptr.grab) { ptr.grab.x = ptr.x; ptr.grab.y = ptr.y; }
+      for (let it = 0; it < 4; it++) {
+        for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
+          if (i < COLS - 1) satisfy(pts[j][i], pts[j][i + 1], rx);
+          if (j < ROWS - 1) satisfy(pts[j][i], pts[j + 1][i], ry);
         }
       }
-      // Faint stitched grid between cells, like the starch lines on the cloth.
-      ctx.strokeStyle = "rgba(246,243,236,0.14)";
-      ctx.lineWidth = 1;
-      ctx.setLineDash([3, 5]);
-      for (let i = 1; i < cols; i++) { ctx.beginPath(); ctx.moveTo(i * s, 0); ctx.lineTo(i * s, h); ctx.stroke(); }
-      for (let j = 1; j < rows; j++) { ctx.beginPath(); ctx.moveTo(0, j * s); ctx.lineTo(w, j * s); ctx.stroke(); }
-      ctx.setLineDash([]);
-      // Light and shadow folds drifting across the cloth.
-      const shift = (t / 40 + tilt * 6) % w;
-      const g = ctx.createLinearGradient(-w + shift, 0, w + shift, h * 0.3);
-      for (let k = 0; k <= 8; k++) g.addColorStop(k / 8, k % 2 ? "rgba(0,0,10,0.16)" : "rgba(255,255,255,0.05)");
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, w, h);
+      ptr.vx *= 0.8; ptr.vy *= 0.8;
+    }
+
+    function render() {
+      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx!.clearRect(0, 0, W, H);
+      const k = dpr, tu = cw / (COLS - 1), tv = ch / (ROWS - 1);
+      for (let j = 0; j < ROWS - 1; j++) for (let i = 0; i < COLS - 1; i++) {
+        const a = pts[j][i], b = pts[j][i + 1], c = pts[j + 1][i], d = pts[j + 1][i + 1];
+        const u0 = i * tu, v0 = j * tv, u1 = (i + 1) * tu, v1 = (j + 1) * tv;
+        const pad = 2, sx = Math.max(0, u0 * k - pad), sy = Math.max(0, v0 * k - pad);
+        const sw = Math.min(tex.width - sx, (u1 - u0) * k + pad * 2), sh = Math.min(tex.height - sy, (v1 - v0) * k + pad * 2);
+        tri(ctx!, tex, k, a.x, a.y, b.x, b.y, d.x, d.y, u0, v0, u1, v0, u1, v1, sx, sy, sw, sh);
+        tri(ctx!, tex, k, a.x, a.y, d.x, d.y, c.x, c.y, u0, v0, u1, v1, u0, v1, sx, sy, sw, sh);
+        // Fold shading: darker where the cloth bunches up, lighter where it stretches and faces the light.
+        const area = ((b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x)) / (rx * ry);
+        const tilt = (b.y - a.y) / rx;
+        const shade = Math.max(-0.22, Math.min(0.32, (1 - area) * 0.9 + tilt * 0.5));
+        ctx!.fillStyle = shade > 0 ? `rgba(4,6,24,${shade})` : `rgba(255,255,255,${-shade * 0.5})`;
+        ctx!.beginPath(); ctx!.moveTo(a.x, a.y); ctx!.lineTo(b.x, b.y); ctx!.lineTo(d.x, d.y); ctx!.lineTo(c.x, c.y); ctx!.closePath(); ctx!.fill();
+      }
     }
 
     function loop(t: number) {
-      draw(t);
+      frame++;
+      if (frame % 4 === 0) paintTexture(tex, cw, ch, dpr, t, seal); // motifs breathe slowly
+      step(t); render();
       if (running) raf = requestAnimationFrame(loop);
     }
 
-    function resize() {
-      // Layout size, not getBoundingClientRect: the cloth starts folded (CSS transform), which would shrink the measured rect.
-      w = canvas!.clientWidth; h = canvas!.clientHeight;
-      canvas!.width = Math.round(w * dpr); canvas!.height = Math.round(h * dpr);
-      ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
-      draw(performance.now());
+    const toLocal = (e: PointerEvent) => { const r = canvas!.getBoundingClientRect(); return { x: ((e.clientX - r.left) / r.width) * W, y: ((e.clientY - r.top) / r.height) * H }; };
+    function onMove(e: PointerEvent) { const p = toLocal(e); ptr.vx = p.x - ptr.x; ptr.vy = p.y - ptr.y; if (Math.abs(ptr.vx) > 80) ptr.vx = 0; if (Math.abs(ptr.vy) > 80) ptr.vy = 0; ptr.x = p.x; ptr.y = p.y; }
+    function onDown(e: PointerEvent) {
+      const p = toLocal(e); ptr.x = p.x; ptr.y = p.y; ptr.down = true;
+      let best: Pt | null = null, bd = rx * 1.4;
+      for (const row of pts) for (const q of row) { if (q.pin) continue; const d = Math.hypot(q.x - p.x, q.y - p.y); if (d < bd) { bd = d; best = q; } }
+      ptr.grab = best;
+      if (best && e.pointerType === "mouse") canvas!.setPointerCapture(e.pointerId);
     }
+    function onUp() { ptr.down = false; ptr.grab = null; }
+    function onLeave() { ptr.x = -1e4; ptr.y = -1e4; ptr.grab = null; ptr.down = false; }
 
-    function onMove(e: PointerEvent) {
-      const r = canvas!.getBoundingClientRect();
-      pointer.tx = e.clientX - r.left; pointer.ty = e.clientY - r.top;
-      if (reduce) draw(performance.now());
-    }
-    function onLeave() { pointer.tx = -1e4; pointer.ty = -1e4; }
-
-    const ro = new ResizeObserver(resize);
+    seal.onload = () => paintTexture(tex, cw, ch, dpr, performance.now(), seal);
+    build(); render();
+    const ro = new ResizeObserver(() => { build(); render(); });
     ro.observe(canvas);
     const io = new IntersectionObserver(([entry]) => {
       const visible = entry.isIntersecting && !reduce;
@@ -122,17 +212,17 @@ export function AdireField({ className = "" }: { className?: string }) {
     });
     io.observe(canvas);
     canvas.addEventListener("pointermove", onMove);
+    canvas.addEventListener("pointerdown", onDown);
+    window.addEventListener("pointerup", onUp);
     canvas.addEventListener("pointerleave", onLeave);
-    resize();
 
     return () => {
-      running = false; cancelAnimationFrame(raf);
-      ro.disconnect(); io.disconnect();
-      window.removeEventListener("deviceorientation", onTilt);
-      canvas.removeEventListener("pointermove", onMove);
-      canvas.removeEventListener("pointerleave", onLeave);
+      running = false; cancelAnimationFrame(raf); ro.disconnect(); io.disconnect();
+      canvas.removeEventListener("pointermove", onMove); canvas.removeEventListener("pointerdown", onDown);
+      window.removeEventListener("pointerup", onUp); canvas.removeEventListener("pointerleave", onLeave);
     };
   }, []);
 
+  // touch-action pan-y: a vertical swipe still scrolls the page; a sideways drag grabs the cloth.
   return <canvas ref={ref} className={className} aria-hidden="true" style={{ touchAction: "pan-y" }} />;
 }
