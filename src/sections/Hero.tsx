@@ -34,14 +34,12 @@ export function Hero() {
         {/* The cloth hangs from a wire on two coral pegs and unfolds down once the intro is done. */}
         <div className="hero-wire" aria-hidden="true"><span style={{ left: "14%" }} /><span style={{ right: "14%" }} /></div>
         <div className="hero-cloth absolute inset-0">
-          <div className="absolute inset-0 overflow-hidden rounded-b-[2rem] rounded-t-md shadow-[0_40px_80px_-40px_rgba(26,36,102,0.7)]">
-            <AdireField className="absolute inset-0 h-full w-full" />
-          </div>
-          <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
-            <img src="/seal.svg" alt="" className="seal-float w-[44%] drop-shadow-[0_20px_30px_rgba(0,0,0,0.35)]" />
-          </div>
-          <span className="absolute bottom-4 left-4 rounded-full bg-starch/90 px-3 py-1.5 font-mono text-[10px] text-ink backdrop-blur">
-            Adire, drawn in code. Move your cursor.
+          {/* Soft shadow the cloth casts on the wall behind it. */}
+          <div aria-hidden="true" className="absolute inset-x-[6%] -bottom-[8%] h-[14%] rounded-[50%] bg-indigo/25 blur-2xl" />
+          {/* The canvas is wider and taller than the resting cloth so it can swing past its edges. */}
+          <AdireField className="absolute -left-[8%] top-0 h-[112%] w-[116%]" />
+          <span className="pointer-events-none absolute bottom-4 left-4 rounded-full bg-starch/90 px-3 py-1.5 font-mono text-[10px] text-ink backdrop-blur">
+            Real cloth physics. Drag it.
           </span>
         </div>
       </div>
