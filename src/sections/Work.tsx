@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ProjectCard } from "../components/ProjectCard";
 import { Reveal } from "../components/Reveal";
+import { PaperIn, SplitTitle } from "../components/Motion";
 import { KINDS, projects, type Kind } from "../data/content";
 
 export function Work() {
@@ -11,12 +12,12 @@ export function Work() {
   return (
     <section id="work" className="gutter mx-auto max-w-7xl scroll-mt-24 py-16 md:py-24">
       <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+        <div>
         <Reveal>
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">Selected work</p>
-          <h2 className="mt-3 max-w-2xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight md:text-6xl">
-            Shipped, live and <span className="text-indigo">in use.</span>
-          </h2>
         </Reveal>
+          <SplitTitle text="Shipped, live and" accent="in use." className="mt-3 max-w-2xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight md:text-6xl" />
+        </div>
         {/* Wraps on small screens instead of scrolling sideways (horizontal swipe has a bad track record here). */}
         <div className="flex flex-wrap gap-2" role="group" aria-label="Filter projects">
           {KINDS.map((k) => {
@@ -33,8 +34,10 @@ export function Work() {
       </div>
 
       <div className="mt-10 grid gap-6 md:grid-cols-2">
-        {shown.map((p) => (
-          <ProjectCard key={p.id} project={p} index={live.indexOf(p)} />
+        {shown.map((p, i) => (
+          <PaperIn key={`${filter}-${p.id}`} index={i} className="h-full">
+            <ProjectCard project={p} index={live.indexOf(p)} />
+          </PaperIn>
         ))}
       </div>
     </section>

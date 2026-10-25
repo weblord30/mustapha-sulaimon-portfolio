@@ -1,4 +1,5 @@
 import { Reveal } from "../components/Reveal";
+import { SplitTitle } from "../components/Motion";
 import { process } from "../data/content";
 
 export function Process() {
@@ -6,10 +7,8 @@ export function Process() {
     <section id="process" className="gutter mx-auto max-w-7xl scroll-mt-24 py-16 md:py-24">
       <Reveal>
         <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">How I work</p>
-        <h2 className="mt-3 max-w-2xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight md:text-6xl">
-          One person, <span className="text-indigo">the whole thread.</span>
-        </h2>
       </Reveal>
+      <SplitTitle text="One person," accent="the whole thread." className="mt-3 max-w-2xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight md:text-6xl" />
       {/* A stitched line runs through the steps: across on desktop, down on mobile. */}
       <ol className="relative mt-12 grid gap-8 md:grid-cols-4 md:gap-6">
         <span aria-hidden className="adire-stitch absolute left-[11px] top-3 h-[calc(100%-1.5rem)] w-[2px] rotate-0 text-coral/60 md:left-3 md:right-3 md:top-[11px] md:h-[2px] md:w-auto" />

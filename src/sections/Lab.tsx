@@ -1,17 +1,16 @@
 import { Reveal } from "../components/Reveal";
+import { SplitTitle, Spread } from "../components/Motion";
 import { lab } from "../data/content";
 
 /** Experiments and personal work. The love letter is shown as an abstract piece only: no names, photos or song. */
 export function Lab() {
   return (
-    <section id="lab" className="scroll-mt-24 bg-indigo-deep py-16 text-starch md:py-24">
+    <Spread id="lab" className="scroll-mt-24 bg-indigo-deep py-16 text-starch md:py-24">
       <div className="gutter mx-auto max-w-7xl">
         <Reveal>
           <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-starch/50">The lab</p>
-          <h2 className="mt-3 max-w-3xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight md:text-6xl">
-            Things I make <span className="text-coral">because I can.</span>
-          </h2>
         </Reveal>
+        <SplitTitle text="Things I make" accent="because I can." accentClass="text-coral" className="lab-title mt-3 max-w-3xl font-display text-5xl font-extrabold leading-[0.95] tracking-tight md:text-6xl" />
         <div className="mt-10 grid gap-6 lg:grid-cols-2">
           {lab.map((item, i) => (
             <Reveal key={item.id} delay={i * 0.08} className="h-full">
@@ -30,7 +29,7 @@ export function Lab() {
           ))}
         </div>
       </div>
-    </section>
+    </Spread>
   );
 }
 

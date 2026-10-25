@@ -43,6 +43,10 @@ export function AdireField({ className = "" }: { className?: string }) {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const pointer = { x: -1e4, y: -1e4, tx: -1e4, ty: -1e4 };
     let w = 0, h = 0, raf = 0, running = false;
+    let wind = 0, lastScroll = window.scrollY, tilt = 0;
+    // Phone tilt where the browser allows it without a permission prompt (Android); iOS simply skips it.
+    const onTilt = (e: DeviceOrientationEvent) => { tilt += ((e.gamma ?? 0) / 3 - tilt) * 0.1; };
+    window.addEventListener("deviceorientation", onTilt);
 
     function draw(t: number) {
       if (!ctx) return;
@@ -53,9 +57,14 @@ export function AdireField({ className = "" }: { className?: string }) {
       const cols = w < 420 ? 5 : 7, s = w / cols, rows = Math.ceil(h / s);
       ctx.lineWidth = Math.max(1.2, s * 0.022);
       ctx.lineCap = "round";
+      // Fabric ripple: a travelling wave plus a kick from scroll speed and phone tilt.
+      wind += (Math.min(18, Math.abs(window.scrollY - lastScroll)) - wind) * 0.08;
+      lastScroll = window.scrollY;
+      const amp = s * (0.035 + wind * 0.006) + Math.abs(tilt) * 0.12;
       for (let i = 0; i < cols; i++) {
         for (let j = 0; j < rows; j++) {
-          const cx = (i + 0.5) * s, cy = (j + 0.5) * s;
+          const wave = Math.sin(t / 900 + i * 0.75 + j * 0.35 + tilt * 0.05);
+          const cx = (i + 0.5) * s + wave * amp, cy = (j + 0.5) * s + Math.cos(t / 1150 + j * 0.6) * amp * 0.6;
           const d = Math.hypot(cx - pointer.x, cy - pointer.y);
           const k = Math.max(0, 1 - d / (s * 2.4));
           const bead = (i * 7 + j * 3) % 11 === 0;
@@ -76,6 +85,12 @@ export function AdireField({ className = "" }: { className?: string }) {
       for (let i = 1; i < cols; i++) { ctx.beginPath(); ctx.moveTo(i * s, 0); ctx.lineTo(i * s, h); ctx.stroke(); }
       for (let j = 1; j < rows; j++) { ctx.beginPath(); ctx.moveTo(0, j * s); ctx.lineTo(w, j * s); ctx.stroke(); }
       ctx.setLineDash([]);
+      // Light and shadow folds drifting across the cloth.
+      const shift = (t / 40 + tilt * 6) % w;
+      const g = ctx.createLinearGradient(-w + shift, 0, w + shift, h * 0.3);
+      for (let k = 0; k <= 8; k++) g.addColorStop(k / 8, k % 2 ? "rgba(0,0,10,0.16)" : "rgba(255,255,255,0.05)");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, w, h);
     }
 
     function loop(t: number) {
@@ -84,8 +99,8 @@ export function AdireField({ className = "" }: { className?: string }) {
     }
 
     function resize() {
-      const r = canvas!.getBoundingClientRect();
-      w = r.width; h = r.height;
+      // Layout size, not getBoundingClientRect: the cloth starts folded (CSS transform), which would shrink the measured rect.
+      w = canvas!.clientWidth; h = canvas!.clientHeight;
       canvas!.width = Math.round(w * dpr); canvas!.height = Math.round(h * dpr);
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
       draw(performance.now());
@@ -113,6 +128,7 @@ export function AdireField({ className = "" }: { className?: string }) {
     return () => {
       running = false; cancelAnimationFrame(raf);
       ro.disconnect(); io.disconnect();
+      window.removeEventListener("deviceorientation", onTilt);
       canvas.removeEventListener("pointermove", onMove);
       canvas.removeEventListener("pointerleave", onLeave);
     };

@@ -1,4 +1,5 @@
 import { Reveal } from "../components/Reveal";
+import { Magnetic, Spread } from "../components/Motion";
 import { bookCall, profile } from "../data/content";
 
 /** Closing call to action and footer in one indigo block; bottom padding clears the iPhone home indicator. */
@@ -10,7 +11,7 @@ export function Contact() {
     { label: "GitHub", href: profile.github, value: "weblord30" },
   ];
   return (
-    <section id="contact" className="relative scroll-mt-24 overflow-hidden bg-indigo text-starch">
+    <Spread id="contact" className="relative scroll-mt-24 overflow-hidden bg-indigo text-starch">
       <div className="adire-dots pointer-events-none absolute inset-0 text-starch/[0.06]" />
       <div className="gutter relative mx-auto max-w-7xl pb-[max(2rem,env(safe-area-inset-bottom))] pt-20 md:pt-28">
         <Reveal>
@@ -22,9 +23,11 @@ export function Contact() {
             Products, client builds, AI work or a second pair of hands on your team. I reply fastest on WhatsApp.
           </p>
           <div className="mt-8 flex flex-wrap gap-3">
-            <a href={bookCall} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-coral px-6 font-medium text-starch transition-transform hover:-translate-y-0.5">
-              Book a call <span aria-hidden>→</span>
-            </a>
+            <Magnetic>
+              <a href={bookCall} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-coral px-6 font-medium text-starch">
+                Book a call <span aria-hidden>→</span>
+              </a>
+            </Magnetic>
             <a href={profile.cv} download className="inline-flex min-h-12 items-center gap-2 rounded-full border border-starch/30 px-6 font-medium transition-colors hover:border-starch">
               Download CV <span aria-hidden>↓</span>
             </a>
@@ -42,9 +45,9 @@ export function Contact() {
 
         <footer className="mt-16 flex flex-col items-start justify-between gap-6 border-t border-starch/10 pt-8 sm:flex-row sm:items-center">
           <img src="/logo-wordmark.svg" alt={profile.name} className="h-8 w-auto" />
-          <p className="font-mono text-[11px] text-starch/50">© {new Date().getFullYear()} · Designed and built by me · Akanbi, made on purpose</p>
+          <p className="font-mono text-[11px] text-starch/50">© {new Date().getFullYear()} {profile.name} · Designed and built by me</p>
         </footer>
       </div>
-    </section>
+    </Spread>
   );
 }

@@ -1,4 +1,5 @@
 import { Reveal } from "../components/Reveal";
+import { SplitTitle } from "../components/Motion";
 import { experience, profile, skills } from "../data/content";
 
 export function About() {
@@ -8,15 +9,13 @@ export function About() {
         <div>
           <Reveal>
             <p className="font-mono text-[11px] uppercase tracking-[0.22em] text-muted">About</p>
-            <blockquote className="mt-5 font-display text-4xl font-extrabold leading-[1.02] tracking-tight md:text-[3.4rem]">
-              <span className="text-coral">{profile.oriki}:</span> {profile.orikiMeaning}.
-            </blockquote>
           </Reveal>
+          <SplitTitle text="Built here." accent="Made on purpose." accentClass="text-coral" className="mt-5 font-display text-5xl font-extrabold leading-[0.98] tracking-tight md:text-6xl" />
           <Reveal delay={0.08}>
             <div className="mt-8 max-w-2xl space-y-5 text-[17px] leading-relaxed text-ink/80">
               <p>
-                I'm {profile.fullName}. Akanbi is my oriki, the Yoruba praise name I was given, and Olabode means wealth has come home.
-                Between them is how I work: everything I build is made on purpose, and it's built here in Nigeria for anywhere.
+                I'm {profile.fullName}. My oriki, the Yoruba praise name I was given, is {profile.oriki}: {profile.orikiMeaning}. Olabode means wealth
+                has come home. Between them is how I work: everything I build is made on purpose, and it's built here in Nigeria for anywhere.
               </p>
               <p>{profile.bio}</p>
               <p>

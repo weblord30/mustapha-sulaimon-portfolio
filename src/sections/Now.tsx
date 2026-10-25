@@ -1,4 +1,6 @@
+import { motion, useReducedMotion } from "framer-motion";
 import { Reveal } from "../components/Reveal";
+import { PaperIn } from "../components/Motion";
 import { now } from "../data/content";
 import log from "../data/shiplog.json";
 
@@ -6,6 +8,7 @@ const fmt = (d: string) => new Date(d + "T12:00:00").toLocaleDateString("en-GB",
 
 /** What I'm doing right now, plus a live-from-git shipping log in place of a numbers strip. */
 export function Now() {
+  const reduce = useReducedMotion();
   // Last 26 weeks as columns of 7 days, for the activity strip.
   const days = log.days.slice(-26 * 7);
   const weeks = Array.from({ length: Math.ceil(days.length / 7) }, (_, i) => days.slice(i * 7, i * 7 + 7));
@@ -19,15 +22,15 @@ export function Now() {
       <div className="mt-6 grid gap-6 lg:grid-cols-[1fr_1.15fr]">
         <div className="grid gap-4 sm:grid-cols-2">
           {now.map((n, i) => (
-            <Reveal key={n.label} delay={i * 0.06}>
-              <div className="h-full rounded-2xl border border-line bg-paper p-5">
+            <PaperIn key={n.label} index={i} className="h-full">
+              <div className="paper h-full rounded-2xl border border-line bg-paper p-5">
                 <p className="flex items-center gap-2 font-mono text-[10.5px] font-bold uppercase tracking-[0.16em] text-coral">
                   <span className="h-1.5 w-1.5 rounded-full bg-coral" /> {n.label}
                 </p>
                 <p className="mt-3 font-display text-2xl font-extrabold tracking-tight">{n.title}</p>
                 <p className="mt-2 text-[14px] leading-relaxed text-ink/70">{n.detail}</p>
               </div>
-            </Reveal>
+            </PaperIn>
           ))}
         </div>
 
@@ -38,16 +41,19 @@ export function Now() {
               <span className="ml-2 font-mono text-[11px] text-starch/60">~/shipping-log</span>
               <span className="ml-auto font-mono text-[10px] text-starch/40">real commits · updated {fmt(log.updated)}</span>
             </div>
-            <ol className="flex-1 space-y-2 px-4 py-4 font-mono text-[11.5px] leading-relaxed sm:text-[12px]">
+            {/* Lines type in one by one when the log scrolls into view. */}
+            <motion.ol className="flex-1 space-y-2 px-4 py-4 font-mono text-[11.5px] leading-relaxed sm:text-[12px]"
+              initial={reduce ? false : "hidden"} whileInView="show" viewport={{ once: true, margin: "-15% 0px" }} transition={{ staggerChildren: 0.14 }}>
               {log.recent.slice(0, 9).map((c, i) => (
-                <li key={i} className="grid grid-cols-[3.4rem_6.6rem_1fr] gap-2 sm:grid-cols-[3.6rem_7.4rem_1fr]">
+                <motion.li key={i} className="grid grid-cols-[3.4rem_6.6rem_1fr] gap-2 sm:grid-cols-[3.6rem_7.4rem_1fr]"
+                  variants={{ hidden: { opacity: 0, clipPath: "inset(0 100% 0 0)" }, show: { opacity: 1, clipPath: "inset(0 0% 0 0)", transition: { duration: 0.5, ease: "linear" } } }}>
                   <span className="text-starch/45">{fmt(c.date)}</span>
                   <span className="truncate text-coral">{c.project}</span>
                   <span className="truncate text-starch/85" title={c.message}>{c.message}</span>
-                </li>
+                </motion.li>
               ))}
               <li className="text-starch/50"><span className="caret text-coral">▍</span></li>
-            </ol>
+            </motion.ol>
             <div className="border-t border-starch/10 px-4 py-4">
               <div className="flex gap-[3px] overflow-hidden" aria-label="Commit activity over the last six months">
                 {weeks.map((w, i) => (

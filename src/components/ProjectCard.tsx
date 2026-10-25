@@ -7,8 +7,8 @@ const SHOTS: Record<string, string> = { westhomes: "westhomes", konnectkwasu: "k
 export function ProjectCard({ project: p, index }: { project: Project; index: number }) {
   const shot = SHOTS[p.id];
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-line bg-paper transition-shadow hover:shadow-[0_24px_60px_-28px_rgba(26,36,102,0.45)]">
-      <div className="relative aspect-[16/10] overflow-hidden border-b border-line bg-sand">
+    <article className="paper group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-line bg-paper transition-[transform,box-shadow] duration-500 hover:-translate-y-1 hover:rotate-[-0.4deg] hover:shadow-[0_30px_60px_-28px_rgba(26,36,102,0.5)]">
+      <div className="dogear relative aspect-[16/10] overflow-hidden border-b border-line bg-sand">
         {shot ? (
           <img src={`/work/${shot}.webp`} alt={`${p.title} home page`} loading="lazy" decoding="async" width={1200} height={750}
             className="h-full w-full object-cover object-top transition-transform duration-700 group-hover:scale-[1.03]" />
