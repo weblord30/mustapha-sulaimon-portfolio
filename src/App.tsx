@@ -1,28 +1,28 @@
 import { useLenis } from "./lib/useLenis";
-import { Nav } from "./components/Nav";
-import { Footer } from "./components/Footer";
+import { TopBar } from "./components/TopBar";
 import { Hero } from "./sections/Hero";
+import { Now } from "./sections/Now";
+import { Work } from "./sections/Work";
+import { Lab } from "./sections/Lab";
 import { About } from "./sections/About";
 import { Process } from "./sections/Process";
-import { Stack } from "./sections/Stack";
-import { Work } from "./sections/Work";
-import { Services } from "./sections/Services";
 import { Contact } from "./sections/Contact";
 
 function App() {
   useLenis();
 
   return (
-    <div className="bg-ground text-text">
-      <Nav />
-      <Hero />
-      <About />
-      <Process />
-      <Stack />
-      <Work />
-      <Services />
-      <Contact />
-      <Footer />
+    <div className="bg-starch text-ink">
+      <TopBar />
+      <main>
+        <Hero />
+        <Now />
+        <Work />
+        <Lab />
+        <About />
+        <Process />
+        <Contact />
+      </main>
     </div>
   );
 }

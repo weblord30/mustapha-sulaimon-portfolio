@@ -1,80 +1,41 @@
-import { motion } from "framer-motion";
-import { MeshGradient } from "../components/MeshGradient";
-import { profile } from "../data/content";
-
-const NAME_CHARS = profile.name.split("");
+import { AdireField } from "../components/AdireField";
+import { Wordmark } from "../components/Wordmark";
+import { bookCall, profile } from "../data/content";
 
 export function Hero() {
   return (
-    <section className="relative flex min-h-svh flex-col items-center justify-center px-6 text-center">
-      <MeshGradient />
-
-      <div className="relative z-10 flex flex-col items-center">
-        <motion.p
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-          className="mb-6 font-mono text-xs tracking-[0.3em] text-muted uppercase"
-        >
-          Available for select work
-        </motion.p>
-
-        <h1 className="font-display text-6xl leading-[1.02] font-extrabold tracking-tight text-balance sm:text-7xl md:text-8xl">
-          {NAME_CHARS.map((char, i) => (
-            <motion.span
-              key={i}
-              initial={{ opacity: 0, y: 24 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.6,
-                delay: 0.15 + i * 0.03,
-                ease: [0.16, 1, 0.3, 1],
-              }}
-              className="inline-block"
-            >
-              {char === " " ? " " : char}
-            </motion.span>
-          ))}
-        </h1>
-
-        <motion.p
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 0.9 }}
-          className="mt-6 max-w-xl font-body text-lg text-muted sm:text-xl"
-        >
-          {profile.role}. {profile.tagline}
-        </motion.p>
-
-        <motion.div
-          initial={{ opacity: 0, y: 14 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, delay: 1.1 }}
-          className="mt-10 flex flex-wrap items-center justify-center gap-4"
-        >
-          <a
-            href="#work"
-            className="rounded-full bg-text px-7 py-3 font-mono text-sm text-ground transition-transform hover:scale-[1.03]"
-          >
-            View Work
+    <section id="top" className="gutter relative mx-auto grid max-w-7xl items-center gap-12 pb-16 pt-[calc(env(safe-area-inset-top)+6.5rem)] md:pb-24 lg:min-h-[100svh] lg:grid-cols-[1.05fr_0.95fr] lg:gap-16 lg:pt-[calc(env(safe-area-inset-top)+5rem)]">
+      <div>
+        <p className="flex items-center gap-3 font-mono text-[11px] uppercase tracking-[0.22em] text-muted">
+          <span className="h-px w-8 bg-coral" /> Full-stack · AI / ML · Design
+        </p>
+        <h1 className="sr-only">Mustapha Sulaimon, full-stack developer, AI/ML engineer and designer</h1>
+        <Wordmark className="mt-6 w-full max-w-[540px]" />
+        <p className="mt-8 max-w-xl text-lg leading-relaxed text-ink/80 md:text-xl">
+          {profile.tagline} <span className="text-muted">Web, mobile and AI products, built end to end from Nigeria for anywhere.</span>
+        </p>
+        <div className="mt-8 flex flex-wrap items-center gap-3">
+          <a href={bookCall} target="_blank" rel="noopener" className="inline-flex min-h-12 items-center gap-2 rounded-full bg-ink px-6 font-medium text-starch transition-transform hover:-translate-y-0.5">
+            Book a call <span aria-hidden>→</span>
           </a>
-          <a
-            href="#contact"
-            className="rounded-full border border-border px-7 py-3 font-mono text-sm text-text transition-colors hover:bg-white/5"
-          >
-            Get in Touch
+          <a href={profile.cv} download className="inline-flex min-h-12 items-center gap-2 rounded-full border border-ink/20 bg-paper px-6 font-medium transition-colors hover:border-ink">
+            Download CV <span aria-hidden>↓</span>
           </a>
-        </motion.div>
+          <a href="#work" className="px-2 py-3 font-mono text-xs uppercase tracking-[0.16em] text-indigo underline-offset-4 hover:underline">See the work</a>
+        </div>
       </div>
 
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.6, duration: 0.8 }}
-        className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 font-mono text-[10px] tracking-[0.3em] text-muted uppercase"
-      >
-        Scroll
-      </motion.div>
+      <div className="relative mx-auto aspect-square w-full max-w-[560px] lg:mr-0">
+        <div className="absolute inset-0 overflow-hidden rounded-[2rem] shadow-[0_40px_80px_-40px_rgba(26,36,102,0.7)]">
+          <AdireField className="absolute inset-0 h-full w-full" />
+        </div>
+        <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
+          <img src="/seal.svg" alt="" className="seal-float w-[44%] drop-shadow-[0_20px_30px_rgba(0,0,0,0.35)]" />
+        </div>
+        <span className="absolute bottom-4 left-4 rounded-full bg-starch/90 px-3 py-1.5 font-mono text-[10px] text-ink backdrop-blur">
+          Adire, drawn in code. Move your cursor.
+        </span>
+      </div>
     </section>
   );
 }
