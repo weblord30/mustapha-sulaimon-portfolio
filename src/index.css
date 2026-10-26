@@ -232,3 +232,5 @@ html[data-theme="night"] .wordmark .wm-night { display: block; }
   animation: bead-drop .55s cubic-bezier(.34,1.56,.64,1) both; }
 .bead-mine { width: 18px; height: 18px; margin: -9px 0 0 -9px; outline: 2px solid rgba(246,243,236,.9); outline-offset: 3px; }
 @keyframes bead-drop { from { transform: translateY(-40px) scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
+.bead-shake { animation: bead-shake .45s ease; }
+@keyframes bead-shake { 0%, 100% { transform: none; } 20% { transform: translateX(-8px) rotate(-.6deg); } 40% { transform: translateX(7px) rotate(.5deg); } 60% { transform: translateX(-5px); } 80% { transform: translateX(3px); } }
