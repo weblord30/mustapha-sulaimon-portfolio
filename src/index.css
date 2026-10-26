@@ -226,3 +226,9 @@ html[data-theme="night"] .wordmark .wm-night { display: block; }
   background: linear-gradient(180deg, transparent, rgba(0,0,0,.12) 50%, transparent); animation: crease .85s ease both; }
 @keyframes crease { 0% { top: 0; opacity: 1; } 100% { top: 100%; opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .case-sheet, .case-sheet.is-closing, .case-crease { animation: none !important; } }
+
+/* Guestbook beads: drop onto the cloth with a little bounce. */
+.bead { width: 14px; height: 14px; margin: -7px 0 0 -7px; border-radius: 999px; box-shadow: 0 3px 6px rgba(0,0,0,.35), inset 0 -2px 2px rgba(0,0,0,.18), inset 0 2px 2px rgba(255,255,255,.35);
+  animation: bead-drop .55s cubic-bezier(.34,1.56,.64,1) both; }
+.bead-mine { width: 18px; height: 18px; margin: -9px 0 0 -9px; outline: 2px solid rgba(246,243,236,.9); outline-offset: 3px; }
+@keyframes bead-drop { from { transform: translateY(-40px) scale(.6); opacity: 0; } to { transform: none; opacity: 1; } }
