@@ -188,6 +188,7 @@ export function AdireField({ className = "" }: { className?: string }) {
 
     function loop(t: number) {
       frame++;
+      if (frame % 30 === 0) canvas!.dataset.frames = String(frame); // cheap liveness marker for tests
       if (frame % 4 === 0) paintTexture(tex, cw, ch, dpr, t, seal); // motifs breathe slowly
       step(t); render();
       if (running) raf = requestAnimationFrame(loop);
