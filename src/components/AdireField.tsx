@@ -79,7 +79,7 @@ function tri(ctx: CanvasRenderingContext2D, img: HTMLCanvasElement, k: number,
   ctx.restore();
 }
 
-type Pt = { x: number; y: number; px: number; py: number; pin: boolean; x0: number };
+type Pt = { x: number; y: number; px: number; py: number; pin: boolean; x0: number; y0: number };
 
 /**
  * The hero cloth: the Adire pattern and seal painted on a mesh that hangs from the wire with real
@@ -117,7 +117,7 @@ export function AdireField({ className = "" }: { className?: string }) {
       pts = [];
       for (let j = 0; j < ROWS; j++) {
         const row: Pt[] = [];
-        for (let i = 0; i < COLS; i++) { const x = ox + i * rx, y = j * ry; row.push({ x, y, px: x, py: y, pin: j === 0, x0: x }); }
+        for (let i = 0; i < COLS; i++) { const x = ox + i * rx, y = j * ry; row.push({ x, y, px: x, py: y, pin: j === 0, x0: x, y0: y }); }
         pts.push(row);
       }
       paintTexture(tex, cw, ch, dpr, performance.now(), seal);
@@ -136,24 +136,28 @@ export function AdireField({ className = "" }: { className?: string }) {
     function step(t: number) {
       wind += (Math.min(30, Math.abs(window.scrollY - lastScroll)) - wind) * 0.1;
       lastScroll = window.scrollY;
-      const breeze = Math.sin(t / 1400) * 0.06 + Math.sin(t / 530) * 0.03;
+      // A barely-there breeze; real movement comes from scrolling and dragging.
+      const breeze = Math.sin(t / 2600) * 0.012;
       const lim = cw * (coarse ? 0.07 : 0.12); // how far the cloth may swing sideways from where it hangs
       for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
         const p = pts[j][i];
         if (p.pin || p === ptr.grab) continue;
-        const vx = (p.x - p.px) * 0.985, vy = (p.y - p.py) * 0.985;
+        // Heavy damping so the cloth settles instead of bobbing forever.
+        const vx = (p.x - p.px) * 0.955, vy = (p.y - p.py) * 0.935;
         p.px = p.x; p.py = p.y;
         const depth = j / (ROWS - 1);
-        const gust = (breeze + wind * 0.012 * Math.sin(t / 300 + i * 0.4)) * depth * 9;
+        const gust = (breeze + wind * 0.01 * Math.sin(t / 300 + i * 0.4)) * depth * 5;
         p.x += vx + gust * Math.sin(t / 700 + j * 0.5) * calm;
-        p.y += vy + 0.32 + Math.abs(gust) * 0.05;
+        p.y += vy + 0.12;
+        // A gentle pull back to how it hangs, so it always comes to rest.
+        p.x += (p.x0 - p.x) * 0.006; p.y += (p.y0 - p.y) * 0.012;
         // Brush: the pointer pushes cloth it moves through.
         const d = Math.hypot(p.x - ptr.x, p.y - ptr.y);
         if (d < rx * 1.6 && !ptr.down) { p.x += ptr.vx * 0.35 * (1 - d / (rx * 1.6)); p.y += ptr.vy * 0.35 * (1 - d / (rx * 1.6)); }
       }
       for (const row of pts) for (const p of row) if (p !== ptr.grab) p.x = Math.max(p.x0 - lim, Math.min(p.x0 + lim, p.x));
       if (ptr.grab) { ptr.grab.x = ptr.x; ptr.grab.y = ptr.y; }
-      for (let it = 0; it < 4; it++) {
+      for (let it = 0; it < 7; it++) {
         for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
           if (i < COLS - 1) satisfy(pts[j][i], pts[j][i + 1], rx);
           if (j < ROWS - 1) satisfy(pts[j][i], pts[j + 1][i], ry);
