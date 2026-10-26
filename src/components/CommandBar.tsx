@@ -24,6 +24,7 @@ export function CommandBar() {
     { id: "cv", label: "Download my CV", hint: "PDF", run: () => { const a = document.createElement("a"); a.href = profile.cv; a.download = ""; a.click(); } },
     { id: "night", label: "Toggle Indigo Night", hint: "Theme", run: () => setPrefs({ night: !getPrefs().night }) },
     { id: "sound", label: "Toggle sound", hint: "Off by default", run: () => { setPrefs({ sound: !getPrefs().sound }); flash(getPrefs().sound ? "Sound on" : "Sound off"); } },
+    { id: "intro", label: "Replay the intro", hint: "Cloth on the wire", run: () => { try { sessionStorage.setItem("intro-replay", "1"); } catch { /* ignore */ } location.hash = ""; location.reload(); } },
     { id: "github", label: "Open GitHub", hint: "weblord30", run: () => window.open(profile.github, "_blank", "noopener") },
     { id: "linkedin", label: "Open LinkedIn", hint: "mustapha-sulaimon", run: () => window.open(profile.linkedin, "_blank", "noopener") },
   ], []);

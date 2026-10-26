@@ -13,7 +13,10 @@ export function Intro() {
   const [show] = useState(() => {
     try {
       if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
-      return !sessionStorage.getItem("intro-seen");
+      // Replays after an hour away (or when asked from the command bar), not just once per session.
+      if (sessionStorage.getItem("intro-replay")) { sessionStorage.removeItem("intro-replay"); return true; }
+      const last = Number(localStorage.getItem("intro-seen-at") || 0);
+      return Date.now() - last > 60 * 60 * 1000 && !sessionStorage.getItem("intro-seen");
     } catch { return false; }
   });
   const [typed, setTyped] = useState(0);
@@ -23,7 +26,7 @@ export function Intro() {
 
   useEffect(() => {
     if (!show) { document.documentElement.classList.add("ready"); return; }
-    try { sessionStorage.setItem("intro-seen", "1"); } catch { /* private mode */ }
+    try { sessionStorage.setItem("intro-seen", "1"); localStorage.setItem("intro-seen-at", String(Date.now())); } catch { /* private mode */ }
     document.documentElement.style.overflow = "hidden";
     const timers: number[] = [];
     for (let i = 1; i <= total; i++) timers.push(window.setTimeout(() => setTyped(i), 260 + i * 70));
