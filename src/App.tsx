@@ -8,6 +8,7 @@ import { About } from "./sections/About";
 import { Process } from "./sections/Process";
 import { Contact } from "./sections/Contact";
 import { Ribbon } from "./sections/Ribbon";
+import { Beads } from "./sections/Beads";
 import { Intro } from "./components/Intro";
 import { Cursor } from "./components/Cursor";
 import { BackToTop } from "./components/Motion";
@@ -42,6 +43,7 @@ function App() {
         <Lab />
         <About />
         <Process />
+        <Beads />
         <Contact />
       </main>
       <BackToTop />
