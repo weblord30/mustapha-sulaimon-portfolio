@@ -22,6 +22,13 @@ logo come from `C:\Users\cork\Documents\brand` (`build.mjs` generates every logo
 - Safe areas: `viewport-fit=cover`; fixed elements and edge sections pad with `env(safe-area-inset-*)`.
 - Rules: never list This Lagos or Arzuz; girlfriend-day only as the anonymised Lab piece; Akanbi only in
   the wordmark line, seal and one About paragraph; KanbiIT never.
+- Wow pass (26 Oct): hero cloth is a Verlet physics mesh (`AdireField.tsx`; draws each triangle's own
+  texture patch for speed), case studies unfold as sheets (`CaseSheet.tsx`, deep links `#case-<id>`),
+  scroll thread (`Thread.tsx`), Indigo Night theme + optional synthesised sound (`lib/prefs.ts`; theme
+  set before first paint in index.html; dark sections use `.on-dark`), Ctrl/Cmd-K `CommandBar.tsx`, and
+  the "Leave a bead" guestbook (`sections/Beads.tsx`) backed by `C:\Users\cork\Documents\portfolio-beads`
+  (Cloudflare Worker + D1 on the musbaftech account, https://portfolio-beads.musbaftech.workers.dev;
+  stores only x, y, colour; one bead per IP hash per 10 minutes; CORS limited to this site).
 - Mobile: no horizontal swipe anywhere (filters wrap). Test real motion with puppeteer, not
   `--virtual-time-budget` screenshots (those don't advance CSS animations).
 
