@@ -16,25 +16,40 @@ export function Beads() {
   const [note, setNote] = useState("");
   const [left, setLeft] = useState(() => { try { return !!localStorage.getItem("ms-bead"); } catch { return false; } });
   const cloth = useRef<HTMLDivElement>(null);
+  const visible = useRef(false), loaded = useRef(false);
+  const [shake, setShake] = useState(false);
 
   // Load the cloth only when it scrolls near, so the API isn't hit by people who never get here.
   useEffect(() => {
     const el = cloth.current; if (!el) return;
     const io = new IntersectionObserver(([e]) => {
-      if (!e.isIntersecting) return;
-      io.disconnect();
+      visible.current = e.isIntersecting;
+      if (!e.isIntersecting || loaded.current) return;
+      loaded.current = true;
+      load();
+    }, { rootMargin: "300px" });
+    io.observe(el);
+    // Stay current: refresh every 20 seconds while the cloth is on screen.
+    const id = window.setInterval(() => { if (visible.current && document.visibilityState === "visible") load(); }, 20_000);
+    return () => { io.disconnect(); clearInterval(id); };
+  }, []);
+
+  function load() {
       fetch(API).then((r) => r.json()).then((d: { total: number; beads: Bead[] }) => {
         let mine: Bead | null = null;
         try { mine = JSON.parse(localStorage.getItem("ms-bead") || "null"); } catch { /* ignore */ }
         setBeads(d.beads.map((b) => (mine && Math.abs(b.x - mine.x) < 1e-6 && Math.abs(b.y - mine.y) < 1e-6 ? { ...b, mine: true } : b)));
         setTotal(d.total);
-      }).catch(() => setTotal(null));
-    }, { rootMargin: "300px" });
-    io.observe(el);
-    return () => io.disconnect();
-  }, []);
+      }).catch(() => { /* keep what we have */ });
+  }
 
   async function drop(e: React.MouseEvent<HTMLDivElement>) {
+    // One bead per visitor: say so clearly instead of failing quietly.
+    if (left) {
+      setNote("You've already left your bead. It's the one with the ring. One per visitor, thank you!");
+      setShake(true); window.setTimeout(() => setShake(false), 500);
+      return;
+    }
     const r = e.currentTarget.getBoundingClientRect();
     const x = Math.min(1, Math.max(0, (e.clientX - r.left) / r.width)), y = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
     const tmp = Date.now();
@@ -44,7 +59,7 @@ export function Beads() {
     swish(0.35);
     try {
       const res = await fetch(API, { method: "POST", headers: { "content-type": "application/json" }, body: JSON.stringify({ x: bead.x, y: bead.y, color }) });
-      if (res.status === 429) { setNote("You've left a bead recently. Come back in a few minutes."); drop(); return; }
+      if (res.status === 429) { setNote("You've already left a bead from this connection today. One per visitor, thank you!"); setShake(true); window.setTimeout(() => setShake(false), 500); drop(); return; }
       if (!res.ok) throw new Error();
       try { localStorage.setItem("ms-bead", JSON.stringify(bead)); } catch { /* ignore */ }
       setLeft(true); setTotal((t) => (t ?? 0) + 1);
@@ -72,7 +87,7 @@ export function Beads() {
               ))}
               <span className="ml-2 font-mono text-[11px] text-muted">{total == null ? "" : `${total} ${total === 1 ? "bead" : "beads"} so far`}</span>
             </div>
-            <p className="mt-4 min-h-6 font-mono text-[12px] text-indigo" role="status">{note || (left ? "You've already left a bead. Thank you." : "")}</p>
+            <p className={`mt-4 min-h-6 rounded-lg font-mono text-[12.5px] ${note ? "border border-coral/40 bg-coral/10 px-3 py-2 text-ink" : "text-indigo"}`} role="status" aria-live="polite">{note || (left ? "You've already left a bead. Thank you." : "")}</p>
           </Reveal>
         </div>
 
@@ -80,7 +95,7 @@ export function Beads() {
           <div className="relative pt-4">
             <div className="hero-wire" aria-hidden="true"><span style={{ left: "16%" }} /><span style={{ right: "16%" }} /></div>
             <div ref={cloth} onClick={drop} role="button" tabIndex={0} aria-label="The bead cloth. Click to leave a bead."
-              className="on-dark relative aspect-[16/11] w-full cursor-crosshair overflow-hidden rounded-b-[1.75rem] rounded-t-md bg-indigo shadow-[0_40px_80px_-40px_rgba(26,36,102,0.7)]">
+              className={`on-dark relative aspect-[16/11] w-full ${left ? "cursor-not-allowed" : "cursor-crosshair"} ${shake ? "bead-shake" : ""} overflow-hidden rounded-b-[1.75rem] rounded-t-md bg-indigo shadow-[0_40px_80px_-40px_rgba(26,36,102,0.7)]`}>
               <div className="adire-dots pointer-events-none absolute inset-0 text-starch/[0.09]" />
               <div className="pointer-events-none absolute inset-3 rounded-b-[1.4rem] rounded-t border border-dashed border-starch/20" />
               {beads.map((b, i) => (

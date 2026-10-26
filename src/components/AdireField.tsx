@@ -137,7 +137,7 @@ export function AdireField({ className = "" }: { className?: string }) {
       wind += (Math.min(30, Math.abs(window.scrollY - lastScroll)) - wind) * 0.1;
       lastScroll = window.scrollY;
       // A barely-there breeze; real movement comes from scrolling and dragging.
-      const breeze = Math.sin(t / 2600) * 0.012;
+      const breeze = Math.sin(t / 2600) * 0.03 + Math.sin(t / 1100) * 0.01;
       const lim = cw * (coarse ? 0.07 : 0.12); // how far the cloth may swing sideways from where it hangs
       for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
         const p = pts[j][i];
