@@ -41,8 +41,13 @@ button{font:inherit;color:inherit;cursor:pointer}
 
 /* Top */
 .top{display:flex;align-items:center;justify-content:space-between;padding-block:20px}
-.top a.name{font:800 18px var(--display);text-decoration:none}
-.theme{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-size:14px;transition:transform .2s var(--ease)}
+.top a.name{font:800 18px var(--display);text-decoration:none;display:flex;align-items:center;gap:10px}
+.top a.name img{width:32px;height:32px;border-radius:8px;display:block}
+.theme{display:flex;align-items:center;gap:8px;border:1px solid var(--line);background:var(--card);border-radius:99px;padding:7px 14px 7px 10px;font-size:14px;transition:transform .2s var(--ease)}
+.theme svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.theme .moon{display:none}
+.theme.is-dark .sun{display:none}.theme.is-dark .moon{display:block}
+.more{color:var(--muted);font-size:13px;padding-top:10px;text-align:center}
 .theme:active{transform:scale(.96)}
 
 /* Hero */
@@ -143,8 +148,8 @@ tr.new{animation:slide .7s var(--ease)}
 }
 
 /* Toast */
-.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translate(-50%,-140%);background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-size:14px;box-shadow:var(--shadow);transition:transform .45s var(--ease);z-index:10;max-width:calc(100% - 32px)}
-.toast.show{transform:translate(-50%,0)}
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translate(-50%,calc(-100% - 40px - env(safe-area-inset-top)));visibility:hidden;transition:transform .45s var(--ease),visibility 0s .45s;background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-size:14px;box-shadow:var(--shadow);z-index:10;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0);visibility:visible;transition:transform .45s var(--ease),visibility 0s}
 
 /* Notes */
 .notes{display:grid;gap:14px;margin:8px 0 56px}
@@ -183,8 +188,8 @@ footer{color:var(--muted);font-size:13px;padding:0 0 32px}
 <a class="skip" href="#demo">Skip To The Demo</a>
 
 <header class="wrap top">
-  <a class="name" href="/">Mustapha Sulaimon</a>
-  <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Dark Mode</button>
+  <a class="name" href="/"><img src="/logo-icon.svg" alt="" width="32" height="32">Mustapha Sulaimon</a>
+  <button class="theme" id="theme" type="button" aria-label="Switch to dark mode"><svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4.5"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg><svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg><span id="theme-l">Light</span></button>
 </header>
 
 <main>
@@ -239,6 +244,7 @@ footer{color:var(--muted);font-size:13px;padding:0 0 32px}
             <thead><tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Items</th><th scope="col">Total</th><th scope="col">Status</th><th scope="col"><span class="sr">Action</span></th></tr></thead>
             <tbody id="orders"></tbody>
           </table>
+          <p class="more" id="more" aria-live="polite"></p>
         </div>
       </div>
     </div>
@@ -330,7 +336,9 @@ const renderTabs = () => {
   }).join("");
 };
 const renderOrders = (newId) => {
-  const list = state.orders.filter(o => state.filter === "all" || o.status === state.filter);
+  const all = state.orders.filter(o => state.filter === "all" || o.status === state.filter);
+  const list = all.slice(0, 6);
+  $("#more").textContent = all.length > 6 ? `Showing the latest 6 of ${all.length} orders` : "";
   $("#cap").textContent = `${tabs.find(t => t[0] === state.filter)[1]} orders, newest first`;
   $("#orders").innerHTML = list.map(o => {
     const n = next[o.status];
@@ -406,7 +414,7 @@ setInterval(() => {
 // ---- Theme ----
 const root = document.documentElement, tb = $("#theme");
 const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
-const syncTheme = () => tb.textContent = isDark() ? "Light Mode" : "Dark Mode";
+const syncTheme = () => { const d = isDark(); tb.classList.toggle("is-dark", d); $("#theme-l").textContent = d ? "Dark" : "Light"; tb.setAttribute("aria-label", d ? "Dark mode on. Switch to light mode" : "Light mode on. Switch to dark mode"); };
 try { const t = localStorage.getItem("nile-theme"); if (t) root.dataset.theme = t; } catch {}
 syncTheme();
 tb.addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; try { localStorage.setItem("nile-theme", root.dataset.theme); } catch {} syncTheme(); renderChart(); });
