@@ -1,0 +1,426 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Built For Nile · Mustapha Sulaimon</title>
+<meta name="description" content="A working merchant dashboard built in plain HTML, CSS and modular JavaScript for the Nile Frontend Intern application.">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+<link rel="stylesheet" href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@700,800&display=swap">
+<style>
+:root{
+  --bg:#f6f3ec;--paper:#fbfaf6;--card:#ffffff;--line:#e3ddcf;--ink:#0b0d12;--muted:#5b6070;
+  --indigo:#1a2466;--indigo-2:#26338a;--coral:#e4572e;--green:#1f9d55;--amber:#b7791f;
+  --shadow:0 1px 2px rgba(11,13,18,.05),0 8px 24px -12px rgba(26,36,102,.18);
+  --display:"Cabinet Grotesk",ui-sans-serif,system-ui,sans-serif;
+  --body:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --ease:cubic-bezier(.2,.7,.2,1);
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0a0f2b;--paper:#0f1638;--card:#131b47;--line:#26306a;--ink:#f1ede4;--muted:#9aa3c9;
+  --indigo:#8f9cff;--indigo-2:#aab4ff;--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px -14px rgba(0,0,0,.6);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0a0f2b;--paper:#0f1638;--card:#131b47;--line:#26306a;--ink:#f1ede4;--muted:#9aa3c9;
+  --indigo:#8f9cff;--indigo-2:#aab4ff;--shadow:0 1px 2px rgba(0,0,0,.3),0 12px 30px -14px rgba(0,0,0,.6);color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 var(--body);
+  padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);transition:background .4s var(--ease),color .4s var(--ease)}
+a{color:inherit}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+@media (min-width:720px){.wrap{padding:0 32px}}
+.skip{position:absolute;left:-999px;top:8px;background:var(--ink);color:var(--bg);padding:8px 12px;border-radius:8px;z-index:9}
+.skip:focus{left:8px}
+:focus-visible{outline:2px solid var(--coral);outline-offset:3px;border-radius:6px}
+.badge{display:inline-block;font:700 11px/1 var(--body);letter-spacing:.14em;text-transform:uppercase;color:var(--coral)}
+h1,h2,h3{font-family:var(--display);line-height:1.08;margin:0;letter-spacing:-.01em}
+button{font:inherit;color:inherit;cursor:pointer}
+
+/* Top */
+.top{display:flex;align-items:center;justify-content:space-between;padding-block:20px}
+.top a.name{font:800 18px var(--display);text-decoration:none}
+.theme{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:8px 14px;font-size:14px;transition:transform .2s var(--ease)}
+.theme:active{transform:scale(.96)}
+
+/* Hero */
+.hero{padding-block:40px 32px}
+.hero h1{font-size:clamp(40px,8vw,84px);font-weight:800;margin:14px 0 18px}
+.hero h1 em{font-style:normal;color:var(--coral)}
+.hero p{max-width:640px;color:var(--muted);font-size:clamp(16px,2.2vw,19px);margin:0}
+.meta{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.chip{border:1px solid var(--line);background:var(--card);border-radius:99px;padding:6px 12px;font-size:13px;color:var(--muted)}
+.chip b{color:var(--ink);font-weight:600}
+.reveal{opacity:0;transform:translateY(14px);animation:rise .8s var(--ease) forwards}
+.reveal:nth-child(2){animation-delay:.08s}.reveal:nth-child(3){animation-delay:.16s}.reveal:nth-child(4){animation-delay:.24s}
+@keyframes rise{to{opacity:1;transform:none}}
+
+/* App shell */
+.app{background:var(--paper);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);overflow:hidden;margin:16px 0 56px}
+.bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid var(--line);background:var(--card)}
+.store{display:flex;gap:12px;align-items:center}
+.logo{width:38px;height:38px;border-radius:10px;background:var(--indigo);color:#fff;display:grid;place-items:center;font:800 17px var(--display)}
+:root[data-theme="dark"] .logo{color:#0a0f2b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .logo{color:#0a0f2b}}
+.store b{display:block;font-size:15px}.store span{font-size:13px;color:var(--muted)}
+.switch{display:flex;align-items:center;gap:10px;font-size:14px;color:var(--muted)}
+.switch button{width:46px;height:26px;border-radius:99px;border:0;background:var(--line);position:relative;transition:background .3s var(--ease)}
+.switch button::after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .3s var(--ease)}
+.switch button[aria-checked="true"]{background:var(--green)}
+.switch button[aria-checked="true"]::after{transform:translateX(20px)}
+.body{padding:20px;display:grid;gap:16px}
+
+/* KPIs */
+.kpis{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+@media (min-width:860px){.kpis{grid-template-columns:repeat(4,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:16px;transition:transform .25s var(--ease),box-shadow .25s var(--ease)}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow)}
+.kpi span{font-size:13px;color:var(--muted)}
+.kpi strong{display:block;font:800 clamp(22px,3vw,28px)/1.2 var(--display);margin:6px 0 2px;font-variant-numeric:tabular-nums}
+.delta{font-size:12px;font-weight:600;color:var(--green)}
+.kpi.pulse{animation:pulse .9s var(--ease)}
+@keyframes pulse{40%{box-shadow:0 0 0 4px color-mix(in srgb,var(--coral) 30%,transparent)}}
+
+/* Grid */
+.grid{display:grid;gap:16px}
+@media (min-width:960px){.grid{grid-template-columns:1.6fr 1fr}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:18px;min-width:0}
+.panel h2{font-size:20px;font-weight:800}
+.ph{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.ph small{color:var(--muted);font-size:13px}
+
+/* Chart */
+.chart svg{width:100%;height:auto;display:block;overflow:visible}
+.chart .line{fill:none;stroke:var(--indigo);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}
+.chart .area{fill:url(#fade)}
+.chart .grid-l{stroke:var(--line);stroke-width:1}
+.chart text{fill:var(--muted);font-size:11px}
+.chart .dot{fill:var(--card);stroke:var(--coral);stroke-width:2.5;transition:cx .3s var(--ease),cy .3s var(--ease)}
+.range{display:flex;gap:4px;background:var(--paper);border:1px solid var(--line);border-radius:99px;padding:3px}
+.range button{border:0;background:none;border-radius:99px;padding:5px 12px;font-size:13px;color:var(--muted);transition:background .25s var(--ease),color .25s var(--ease)}
+.range button[aria-pressed="true"]{background:var(--indigo);color:#fff}
+:root[data-theme="dark"] .range button[aria-pressed="true"]{color:#0a0f2b}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .range button[aria-pressed="true"]{color:#0a0f2b}}
+.tip{font-size:13px;color:var(--muted);min-height:20px;margin-top:6px}
+.tip b{color:var(--ink)}
+
+/* Stock */
+.stock{list-style:none;margin:0;padding:0;display:grid;gap:12px}
+.stock li{display:grid;grid-template-columns:1fr auto;gap:4px 12px;font-size:14px}
+.meter{grid-column:1/-1;height:6px;border-radius:99px;background:var(--paper);overflow:hidden}
+.meter i{display:block;height:100%;border-radius:inherit;background:var(--indigo);transform-origin:left;transform:scaleX(0);transition:transform 1s var(--ease)}
+.stock li.low .meter i{background:var(--coral)}
+.stock li.low em{color:var(--coral);font-style:normal;font-weight:600}
+.restock{border:1px solid var(--line);background:none;border-radius:8px;padding:2px 8px;font-size:12px;margin-left:6px}
+
+/* Orders */
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{border:1px solid var(--line);background:none;border-radius:99px;padding:6px 12px;font-size:13px;transition:all .2s var(--ease)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+caption{text-align:left;color:var(--muted);font-size:13px;padding-bottom:8px}
+th{text-align:left;font-weight:600;color:var(--muted);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:10px 8px;border-bottom:1px solid var(--line)}
+td{padding:12px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+tbody tr{transition:background .2s var(--ease)}
+tbody tr:hover{background:var(--paper)}
+tr.new{animation:slide .7s var(--ease)}
+@keyframes slide{from{opacity:0;transform:translateY(-8px);background:color-mix(in srgb,var(--coral) 12%,transparent)}}
+.status{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;border-radius:99px;padding:4px 9px}
+.s-paid{background:color-mix(in srgb,var(--indigo) 14%,transparent);color:var(--indigo)}
+.s-shipping{background:color-mix(in srgb,var(--amber) 18%,transparent);color:var(--amber)}
+.s-delivered{background:color-mix(in srgb,var(--green) 16%,transparent);color:var(--green)}
+.act{border:1px solid var(--line);background:var(--card);border-radius:8px;padding:6px 10px;font-size:13px;transition:transform .15s var(--ease),background .2s}
+.act:hover{background:var(--paper)}.act:active{transform:scale(.96)}
+.act[disabled]{opacity:.45;cursor:default}
+@media (max-width:640px){
+  thead{position:absolute;left:-9999px}
+  table,tbody,tr,td,caption{display:block}
+  tr{border:1px solid var(--line);border-radius:12px;padding:6px 12px;margin-bottom:10px}
+  td{border:0;padding:6px 0;display:flex;justify-content:space-between;gap:12px}
+  td::before{content:attr(data-label);color:var(--muted);font-size:13px}
+}
+
+/* Toast */
+.toast{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top));transform:translate(-50%,-140%);background:var(--ink);color:var(--bg);border-radius:12px;padding:10px 16px;font-size:14px;box-shadow:var(--shadow);transition:transform .45s var(--ease);z-index:10;max-width:calc(100% - 32px)}
+.toast.show{transform:translate(-50%,0)}
+
+/* Notes */
+.notes{display:grid;gap:14px;margin:8px 0 56px}
+@media (min-width:760px){.notes{grid-template-columns:repeat(2,1fr)}}
+.note{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px}
+.note h3{font-size:19px;font-weight:800;margin-bottom:6px}
+.note p{margin:0;color:var(--muted);font-size:15px}
+.section-h{font-size:clamp(28px,4.5vw,44px);font-weight:800;margin:10px 0 20px}
+.stats{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:20px}
+
+/* Work */
+.work{display:grid;gap:12px;margin-bottom:56px}
+@media (min-width:760px){.work{grid-template-columns:repeat(3,1fr)}}
+.work a{display:block;text-decoration:none;background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;transition:transform .3s var(--ease),border-color .3s}
+.work a:hover{transform:translateY(-3px);border-color:var(--indigo)}
+.work b{font:800 19px var(--display);display:block;margin-bottom:6px}
+.work span{color:var(--muted);font-size:14px;display:block}
+.work i{font-style:normal;color:var(--coral);font-weight:600;font-size:14px;display:block;margin-top:12px}
+
+/* CTA */
+.cta{background:var(--indigo);color:#fff;border-radius:22px;padding:clamp(28px,5vw,56px);margin-bottom:40px}
+:root[data-theme="dark"] .cta{background:#1a2466}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .cta{background:#1a2466}}
+.cta h2{font-size:clamp(28px,5vw,48px);font-weight:800;max-width:640px}
+.cta p{opacity:.85;max-width:560px}
+.btns{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+.btn{display:inline-block;text-decoration:none;border-radius:12px;padding:13px 20px;font-weight:600;font-size:15px;transition:transform .2s var(--ease)}
+.btn:hover{transform:translateY(-2px)}
+.btn.main{background:var(--coral);color:#fff}
+.btn.ghost{border:1px solid rgba(255,255,255,.35);color:#fff}
+footer{color:var(--muted);font-size:13px;padding:0 0 32px}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}.reveal{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<a class="skip" href="#demo">Skip To The Demo</a>
+
+<header class="wrap top">
+  <a class="name" href="/">Mustapha Sulaimon</a>
+  <button class="theme" id="theme" type="button" aria-label="Switch colour theme">Dark Mode</button>
+</header>
+
+<main>
+  <section class="wrap hero" aria-labelledby="h1">
+    <span class="badge reveal">For The Nile Team · Frontend Intern</span>
+    <h1 id="h1" class="reveal">Built For <em>Nile</em>.</h1>
+    <p class="reveal">Nile gives merchants an operating system for their business, so I built a small piece of one. It's a working store dashboard made with plain HTML, CSS and modular JavaScript, with no framework and no libraries. Try it below: ship an order, restock an item, or switch the store offline.</p>
+    <div class="meta reveal">
+      <span class="chip">Loaded In <b id="load">…</b></span>
+      <span class="chip">Page Weight <b id="weight">…</b></span>
+      <span class="chip">Dependencies <b>0</b></span>
+      <span class="chip">Keyboard <b>Fully Usable</b></span>
+    </div>
+  </section>
+
+  <section class="wrap" id="demo" aria-label="Merchant dashboard demo">
+    <div class="app">
+      <div class="bar">
+        <div class="store"><div class="logo" aria-hidden="true">A</div><div><b>Adunni Beauty</b><span>Lagos · Store Dashboard</span></div></div>
+        <div class="switch"><span id="online-label">Store Online</span><button type="button" role="switch" aria-checked="true" aria-labelledby="online-label" id="online"></button></div>
+      </div>
+      <div class="body">
+        <div class="kpis" role="list">
+          <div class="kpi" role="listitem" id="k-sales"><span>Sales Today</span><strong data-v>₦0</strong><span class="delta">+18% Vs Yesterday</span></div>
+          <div class="kpi" role="listitem" id="k-orders"><span>Orders</span><strong data-v>0</strong><span class="delta">+6 Since Morning</span></div>
+          <div class="kpi" role="listitem" id="k-visits"><span>Visitors</span><strong data-v>0</strong><span class="delta">+12%</span></div>
+          <div class="kpi" role="listitem" id="k-conv"><span>Conversion</span><strong data-v>0%</strong><span class="delta">+0.4 Pts</span></div>
+        </div>
+
+        <div class="grid">
+          <div class="panel chart">
+            <div class="ph"><h2>Sales</h2>
+              <div class="range" role="group" aria-label="Chart range">
+                <button type="button" aria-pressed="true" data-r="7">7 Days</button><button type="button" aria-pressed="false" data-r="30">30 Days</button>
+              </div>
+            </div>
+            <svg id="chart" viewBox="0 0 600 220" role="img" aria-label="Sales chart"></svg>
+            <p class="tip" id="tip" aria-live="polite">Hover or tap the chart to see a day.</p>
+          </div>
+          <div class="panel">
+            <div class="ph"><h2>Stock</h2><small>Low Stock In Coral</small></div>
+            <ul class="stock" id="stock"></ul>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="ph"><h2>Orders</h2>
+            <div class="tabs" role="tablist" aria-label="Filter orders" id="tabs"></div>
+          </div>
+          <table>
+            <caption id="cap">All orders, newest first</caption>
+            <thead><tr><th scope="col">Order</th><th scope="col">Customer</th><th scope="col">Items</th><th scope="col">Total</th><th scope="col">Status</th><th scope="col"><span class="sr">Action</span></th></tr></thead>
+            <tbody id="orders"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap" aria-labelledby="notes-h">
+    <span class="badge">How It Matches The Role</span>
+    <h2 class="section-h" id="notes-h">Your requirements, in working code.</h2>
+    <div class="notes">
+      <div class="note"><h3>Semantic, Accessible HTML</h3><p>Landmarks, a real table with caption and headers, ARIA switch and tab roles, live regions for new orders, a skip link and visible focus. Every control works with the keyboard alone.</p></div>
+      <div class="note"><h3>Modular JavaScript</h3><p>Small modules for state, rendering, the chart and the live feed. A single <code>render()</code> keeps the KPIs, table and stock in sync after every action.</p></div>
+      <div class="note"><h3>Motion With Purpose</h3><p>CSS transitions show what changed: new orders slide in, KPIs pulse, stock meters fill. Everything respects reduced motion settings.</p></div>
+      <div class="note"><h3>Speed On Real Networks</h3><p>One small file with an inline SVG chart and no framework, so it loads fast on Nigerian mobile data. It's responsive down to small phones, with iPhone safe areas handled.</p></div>
+    </div>
+  </section>
+
+  <section class="wrap" aria-labelledby="work-h">
+    <span class="badge">Live Commerce Work</span>
+    <h2 class="section-h" id="work-h">Already running for real merchants.</h2>
+    <div class="work">
+      <a href="https://thefinessebrand.pages.dev" target="_blank" rel="noopener"><b>Finesse Luxé</b><span>Store and order system for a mirrors and frames brand, with auto-cancel and WhatsApp reminders.</span><i>Visit Store →</i></a>
+      <a href="https://rydlo.pages.dev" target="_blank" rel="noopener"><b>Rydlo</b><span>Five connected apps for campus delivery: customer, rider, shop, admin and site.</span><i>Visit Site →</i></a>
+      <a href="https://westhomeshub.com" target="_blank" rel="noopener"><b>Westhomes</b><span>A fast Astro property hub for a Lagos client.</span><i>Visit Site →</i></a>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="cta">
+      <span class="badge" style="color:#ffb59e">Ready To Start</span>
+      <h2>I'd love to build the next screens of Nile with you.</h2>
+      <p>I'm available immediately, remote or in Lagos. My CV and full portfolio are one tap away.</p>
+      <div class="btns">
+        <a class="btn main" href="mailto:musbaftech@gmail.com?subject=Nile%20Frontend%20Intern">Email Me</a>
+        <a class="btn ghost" href="/Mustapha-Sulaimon-CV.pdf" target="_blank" rel="noopener">Download CV</a>
+        <a class="btn ghost" href="/">Full Portfolio</a>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="wrap">Built by hand for the Nile Frontend Intern application. Adunni Beauty and its data are made up for the demo.</footer>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script type="module">
+// ---- State ----
+const naira = n => "₦" + Math.round(n).toLocaleString("en-NG");
+const products = [
+  { id: "p1", name: "Shea Glow Body Butter", qty: 42, max: 60, price: 6500 },
+  { id: "p2", name: "Black Soap Face Wash", qty: 6, max: 50, price: 4200 },
+  { id: "p3", name: "Hibiscus Lip Oil", qty: 28, max: 40, price: 3800 },
+  { id: "p4", name: "Baobab Hair Serum", qty: 4, max: 30, price: 8900 },
+];
+const names = ["Tolu A.", "Chiamaka O.", "Ibrahim S.", "Funke B.", "Emeka N.", "Aisha M.", "Kunle O.", "Zainab Y."];
+const state = { online: true, filter: "all", range: 7, visits: 214, orders: [] };
+let seq = 1040;
+const makeOrder = (status = "paid") => {
+  const p = products[Math.floor(Math.random() * products.length)];
+  const qty = 1 + Math.floor(Math.random() * 3);
+  return { id: "#" + (++seq), who: names[Math.floor(Math.random() * names.length)], item: `${qty} × ${p.name}`, pid: p.id, qty, total: p.price * qty, status };
+};
+["delivered", "delivered", "shipping", "shipping", "paid", "paid"].forEach(s => state.orders.unshift(makeOrder(s)));
+
+// ---- Helpers ----
+const $ = s => document.querySelector(s);
+const toast = msg => { const t = $("#toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 2600); };
+const countTo = (el, to, fmt) => {
+  const from = el._v ?? 0, start = performance.now(), dur = 700;
+  const step = now => { const k = Math.min(1, (now - start) / dur), e = 1 - Math.pow(1 - k, 3); el.textContent = fmt(from + (to - from) * e); if (k < 1) requestAnimationFrame(step); };
+  el._v = to; requestAnimationFrame(step);
+};
+
+// ---- KPIs ----
+const renderKpis = () => {
+  const sales = state.orders.reduce((a, o) => a + o.total, 0);
+  countTo($("#k-sales [data-v]"), sales, naira);
+  countTo($("#k-orders [data-v]"), state.orders.length, n => Math.round(n));
+  countTo($("#k-visits [data-v]"), state.visits, n => Math.round(n).toLocaleString());
+  countTo($("#k-conv [data-v]"), state.orders.length / state.visits * 100, n => n.toFixed(1) + "%");
+};
+const pulse = id => { const el = $(id); el.classList.remove("pulse"); void el.offsetWidth; el.classList.add("pulse"); };
+
+// ---- Orders ----
+const tabs = [["all", "All"], ["paid", "Paid"], ["shipping", "Shipping"], ["delivered", "Delivered"]];
+const next = { paid: ["shipping", "Mark Shipped"], shipping: ["delivered", "Mark Delivered"] };
+const renderTabs = () => {
+  $("#tabs").innerHTML = tabs.map(([k, l]) => {
+    const n = k === "all" ? state.orders.length : state.orders.filter(o => o.status === k).length;
+    return `<button type="button" role="tab" aria-selected="${state.filter === k}" data-f="${k}">${l} (${n})</button>`;
+  }).join("");
+};
+const renderOrders = (newId) => {
+  const list = state.orders.filter(o => state.filter === "all" || o.status === state.filter);
+  $("#cap").textContent = `${tabs.find(t => t[0] === state.filter)[1]} orders, newest first`;
+  $("#orders").innerHTML = list.map(o => {
+    const n = next[o.status];
+    return `<tr class="${o.id === newId ? "new" : ""}">
+      <td data-label="Order">${o.id}</td><td data-label="Customer">${o.who}</td><td data-label="Items">${o.item}</td>
+      <td data-label="Total">${naira(o.total)}</td>
+      <td data-label="Status"><span class="status s-${o.status}">${o.status}</span></td>
+      <td data-label="Action">${n ? `<button type="button" class="act" data-id="${o.id}">${n[1]}</button>` : `<button type="button" class="act" disabled>Done</button>`}</td></tr>`;
+  }).join("") || `<tr><td colspan="6">No orders here yet.</td></tr>`;
+};
+
+// ---- Stock ----
+const renderStock = () => {
+  $("#stock").innerHTML = products.map(p => {
+    const low = p.qty <= 8;
+    return `<li class="${low ? "low" : ""}"><span>${p.name}</span><span>${low ? `<em>${p.qty} Left</em><button type="button" class="restock" data-p="${p.id}" aria-label="Restock ${p.name}">Restock</button>` : p.qty + " In Stock"}</span>
+      <span class="meter" aria-hidden="true"><i style="transform:scaleX(${p.qty / p.max})"></i></span></li>`;
+  }).join("");
+};
+
+// ---- Chart ----
+const series = { 7: [182, 240, 210, 305, 288, 352, 410], 30: Array.from({ length: 30 }, (_, i) => 160 + Math.round(90 * Math.sin(i / 4) + i * 6 + (i % 5) * 12)) };
+const renderChart = () => {
+  const d = series[state.range], W = 600, H = 220, P = 28, max = Math.max(...d) * 1.15;
+  const x = i => P + i * (W - P * 2) / (d.length - 1), y = v => H - P - v / max * (H - P * 2);
+  const pts = d.map((v, i) => [x(i), y(v)]);
+  const path = pts.map((p, i) => (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1)).join(" ");
+  const grid = [0.25, 0.5, 0.75].map(k => `<line class="grid-l" x1="${P}" x2="${W - P}" y1="${y(max * k)}" y2="${y(max * k)}"/>`).join("");
+  const svg = $("#chart");
+  svg.innerHTML = `<defs><linearGradient id="fade" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--indigo)" stop-opacity=".22"/><stop offset="1" stop-color="var(--indigo)" stop-opacity="0"/></linearGradient></defs>
+    ${grid}<path class="area" d="${path} L ${x(d.length - 1)} ${H - P} L ${P} ${H - P} Z"/><path class="line" d="${path}"/>
+    <text x="${P}" y="${H - 6}">${state.range} days ago</text><text x="${W - P}" y="${H - 6}" text-anchor="end">Today</text>
+    <circle class="dot" r="6" cx="${pts.at(-1)[0]}" cy="${pts.at(-1)[1]}"/>`;
+  const line = svg.querySelector(".line"), len = line.getTotalLength();
+  line.style.strokeDasharray = len; line.style.strokeDashoffset = len;
+  line.getBoundingClientRect(); line.style.transition = "stroke-dashoffset 1.1s cubic-bezier(.2,.7,.2,1)"; line.style.strokeDashoffset = 0;
+  const dot = svg.querySelector(".dot");
+  const show = i => { dot.setAttribute("cx", pts[i][0]); dot.setAttribute("cy", pts[i][1]); $("#tip").innerHTML = `<b>${naira(d[i] * 1000)}</b> in sales, ${i === d.length - 1 ? "today" : (d.length - 1 - i) + " days ago"}`; };
+  svg.onpointermove = e => { const r = svg.getBoundingClientRect(), px = (e.clientX - r.left) / r.width * W; show(Math.max(0, Math.min(d.length - 1, Math.round((px - P) / ((W - P * 2) / (d.length - 1)))))); };
+};
+
+const render = (newId) => { renderKpis(); renderTabs(); renderOrders(newId); renderStock(); };
+
+// ---- Events ----
+document.addEventListener("click", e => {
+  const b = e.target.closest("button"); if (!b) return;
+  if (b.dataset.f) { state.filter = b.dataset.f; renderTabs(); renderOrders(); }
+  else if (b.dataset.id) { const o = state.orders.find(o => o.id === b.dataset.id); const [s] = next[o.status]; o.status = s; toast(`${o.id} marked ${s}`); renderTabs(); renderOrders(); }
+  else if (b.dataset.p) { const p = products.find(p => p.id === b.dataset.p); p.qty = p.max; toast(`${p.name} restocked to ${p.max}`); renderStock(); }
+  else if (b.dataset.r) { state.range = +b.dataset.r; document.querySelectorAll("[data-r]").forEach(x => x.setAttribute("aria-pressed", x === b)); renderChart(); }
+});
+$("#tabs").addEventListener("keydown", e => {
+  if (!["ArrowRight", "ArrowLeft"].includes(e.key)) return;
+  const i = tabs.findIndex(t => t[0] === state.filter), n = (i + (e.key === "ArrowRight" ? 1 : tabs.length - 1)) % tabs.length;
+  state.filter = tabs[n][0]; renderTabs(); renderOrders(); $(`[data-f="${state.filter}"]`).focus();
+});
+$("#online").addEventListener("click", e => {
+  state.online = !state.online; e.currentTarget.setAttribute("aria-checked", state.online);
+  $("#online-label").textContent = state.online ? "Store Online" : "Store Offline";
+  toast(state.online ? "Store is live again. New orders resume." : "Store paused. Customers see a Back Soon page.");
+});
+
+// ---- Live feed: a new order every ~9s while the store is online and the tab is visible ----
+setInterval(() => {
+  if (!state.online || document.hidden) return;
+  state.visits += 3 + Math.floor(Math.random() * 6);
+  const o = makeOrder(); state.orders.unshift(o);
+  const p = products.find(p => p.id === o.pid); p.qty = Math.max(0, p.qty - o.qty);
+  toast(`New order ${o.id} from ${o.who}, ${naira(o.total)}`);
+  render(o.id); pulse("#k-sales"); pulse("#k-orders");
+}, 9000);
+
+// ---- Theme ----
+const root = document.documentElement, tb = $("#theme");
+const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+const syncTheme = () => tb.textContent = isDark() ? "Light Mode" : "Dark Mode";
+try { const t = localStorage.getItem("nile-theme"); if (t) root.dataset.theme = t; } catch {}
+syncTheme();
+tb.addEventListener("click", () => { root.dataset.theme = isDark() ? "light" : "dark"; try { localStorage.setItem("nile-theme", root.dataset.theme); } catch {} syncTheme(); renderChart(); });
+
+// ---- Real load numbers ----
+addEventListener("load", () => setTimeout(() => {
+  const nav = performance.getEntriesByType("navigation")[0];
+  $("#load").textContent = nav ? Math.round(nav.loadEventStart || nav.domContentLoadedEventEnd) + " ms" : "Fast";
+  const kb = performance.getEntriesByType("resource").reduce((a, r) => a + (r.transferSize || 0), nav?.transferSize || 0) / 1024;
+  $("#weight").textContent = kb > 1 ? kb.toFixed(0) + " KB" : "Cached";
+}, 0));
+
+render(); renderChart();
+</script>
+<style>.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}</style>
+</body>
+</html>
